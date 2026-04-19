@@ -1,7 +1,7 @@
 /* @jsxImportSource react */
 import { ImageResponse } from '@vercel/og';
 
-export const config = { runtime: 'edge' };
+export const config = { runtime: 'nodejs' };
 
 const GOLD = '#E7C16A';
 const GOLD_DIM = '#B98E3B';
