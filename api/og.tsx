@@ -1,6 +1,5 @@
 /* @jsxImportSource react */
 import { unstable_createNodejsStream } from '@vercel/og';
-import type { IncomingMessage, ServerResponse } from 'http';
 
 const GOLD = '#E7C16A';
 const GOLD_DIM = '#B98E3B';
@@ -28,7 +27,7 @@ async function loadFont(family: string, weight: number, text: string): Promise<A
   return await fontRes.arrayBuffer();
 }
 
-export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
+export default async function handler(req: any, res: any): Promise<void> {
   try {
     const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
     const p = url.searchParams;
