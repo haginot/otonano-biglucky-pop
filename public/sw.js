@@ -4,7 +4,8 @@
 // - Cache-first for static assets (icons, fonts)
 // - Bypasses dynamic routes (/og, /r, /api/*) — always go to network
 
-const CACHE = 'otonano-v1';
+// Bump this when changing SHELL contents to force a clean install.
+const CACHE = 'otonano-v2';
 const SHELL = [
   '/',
   '/organizer.html',
@@ -14,16 +15,10 @@ const SHELL = [
   '/icons/game-512.png',
   '/icons/game-192-maskable.png',
   '/icons/game-512-maskable.png',
-  '/icons/organizer-192.png',
-  '/icons/organizer-512.png',
-  '/icons/organizer-192-maskable.png',
-  '/icons/organizer-512-maskable.png',
   '/icons/apple-touch-icon.png',
-  '/icons/apple-touch-icon-organizer.png',
   '/icons/favicon-32.png',
   '/icons/favicon-16.png',
   '/icons/game.svg',
-  '/icons/organizer.svg',
 ];
 
 self.addEventListener('install', (event) => {
