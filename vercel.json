@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/r", "destination": "/api/r" },
+    { "source": "/og.png", "destination": "/api/og" }
+  ],
+  "headers": [
+    {
+      "source": "/api/og",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=60, s-maxage=31536000, stale-while-revalidate=86400" }
+      ]
+    },
+    {
+      "source": "/api/r",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=60" }
+      ]
+    }
+  ]
+}

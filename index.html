@@ -2244,12 +2244,17 @@ main { padding: 20px 16px 40px; max-width: 520px; }
 
       const shareUrl = useMemo(() => {
         if (!result || !name) return '';
-        const u = new URL(window.location.href);
+        const meta = window.TIER_META && window.TIER_META[result.tier];
+        const u = new URL('/r', window.location.origin);
+        u.searchParams.set('name', name.trim());
+        u.searchParams.set('amount', String(Math.round(result.amount)));
         u.searchParams.set('expected', String(expected));
         u.searchParams.set('people', String(people));
         u.searchParams.set('strategy', strategy);
-        u.searchParams.set('name', name.trim());
-        u.searchParams.set('result', '1');
+        u.searchParams.set('tier', result.tier);
+        if (meta) u.searchParams.set('hue', String(meta.hue));
+        if (result.seedHex) u.searchParams.set('seed', result.seedHex);
+        if (result.verse) u.searchParams.set('verse', result.verse);
         return u.toString();
       }, [result, name, expected, people, strategy]);
 
