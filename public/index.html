@@ -22,6 +22,18 @@
   <meta name="twitter:description" content="安定志向・ギャンブラー・運任せ… 志向を選んで名前を入れるだけ。あなたの支払い金額を確率分布が決める。" />
   <meta name="twitter:image" content="https://otonano-biglucky-pop.vercel.app/og-image.jpg" />
 
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0F2419" />
+  <link rel="icon" type="image/svg+xml" href="/icons/game.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ビッくらポン" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -2387,5 +2399,14 @@ main { padding: 20px 16px 40px; max-width: 520px; }
   </script>
 
   <!-- (original external component files kept in /components for reference; not loaded) -->
+
+  <script>
+    // Register Service Worker (installability + offline cache for app shell).
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,29 @@
+{
+  "id": "/organizer.html",
+  "name": "ビッくらポン 幹事ツール",
+  "short_name": "幹事ツール",
+  "description": "大人のビッくらポン — 参加者URL・QR・ランク別期待値・PayPay送金の一括管理。",
+  "start_url": "/organizer.html?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0F2419",
+  "background_color": "#0F2419",
+  "lang": "ja",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "finance"],
+  "icons": [
+    { "src": "/icons/organizer-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/organizer-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/organizer-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/organizer-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/organizer.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    {
+      "name": "新規セットアップ",
+      "url": "/organizer.html?source=pwa",
+      "icons": [{ "src": "/icons/organizer-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+      <stop offset="0%" stop-color="#1E3D2D"/>
+      <stop offset="55%" stop-color="#152E22"/>
+      <stop offset="100%" stop-color="#0A1A12"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F5D88A"/>
+      <stop offset="50%" stop-color="#E7C16A"/>
+      <stop offset="100%" stop-color="#9B7828"/>
+    </linearGradient>
+    <linearGradient id="goldSoft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E7C16A" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7A5D1D" stop-opacity="0.5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base: rounded square for non-maskable use -->
+  <rect width="512" height="512" rx="96" ry="96" fill="url(#bg)"/>
+
+  <!-- Outer gold ring -->
+  <circle cx="256" cy="256" r="188" fill="none" stroke="url(#gold)" stroke-width="4" opacity="0.85"/>
+
+  <!-- Roulette wheel segments (alternating) -->
+  <g>
+    <circle cx="256" cy="256" r="176" fill="#0F2419"/>
+    <g>
+      <!-- 12 alternating segments using paths (triangles from center) -->
+      <g fill="#1E3D2D">
+        <path d="M256 256 L256 80 A176 176 0 0 1 405.3 165.6 Z" opacity="0.7"/>
+        <path d="M256 256 L405.3 346.4 A176 176 0 0 1 256 432 Z" opacity="0.7"/>
+        <path d="M256 256 L106.7 346.4 A176 176 0 0 1 106.7 165.6 Z" opacity="0.7"/>
+      </g>
+      <g fill="#5A1A1A">
+        <path d="M256 256 L405.3 165.6 A176 176 0 0 1 405.3 346.4 Z" opacity="0.8"/>
+        <path d="M256 256 L256 432 A176 176 0 0 1 106.7 346.4 Z" opacity="0.8"/>
+        <path d="M256 256 L106.7 165.6 A176 176 0 0 1 256 80 Z" opacity="0.8"/>
+      </g>
+    </g>
+    <!-- Spokes -->
+    <g stroke="url(#goldSoft)" stroke-width="1.5" opacity="0.75">
+      <line x1="256" y1="82" x2="256" y2="430"/>
+      <line x1="82" y1="256" x2="430" y2="256"/>
+      <line x1="133" y1="133" x2="379" y2="379"/>
+      <line x1="379" y1="133" x2="133" y2="379"/>
+    </g>
+  </g>
+
+  <!-- Center hub -->
+  <circle cx="256" cy="256" r="82" fill="#0F2419"/>
+  <circle cx="256" cy="256" r="82" fill="none" stroke="url(#gold)" stroke-width="2.5"/>
+
+  <!-- ¥ symbol, centered -->
+  <text x="256" y="302" text-anchor="middle"
+        font-family="Playfair Display, 'Noto Serif JP', Georgia, serif"
+        font-weight="700" font-size="108" fill="url(#gold)">¥</text>
+
+  <!-- Subtle decorative dots at top/bottom -->
+  <circle cx="256" cy="60" r="4" fill="#E7C16A"/>
+  <circle cx="256" cy="452" r="4" fill="#E7C16A"/>
+</svg>
