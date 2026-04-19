@@ -308,6 +308,12 @@
     <div class="field-note">空欄の場合は「参加者1」〜「参加者N名」で自動生成</div>
   </div>
 
+  <div class="field field-full" style="margin-bottom:16px">
+    <label>PayPay マイコード URL（任意）</label>
+    <input type="url" id="paypay-url" placeholder="https://qr.paypay.ne.jp/..." style="width:100%; height:48px; padding:0 14px; background:oklch(0.1 0.025 150 / 0.9); border:1px solid oklch(0.82 0.14 85 / 0.22); color:var(--cream); font-family:var(--font-mono); font-size:13px; border-radius:4px; outline:none;" />
+    <div class="field-note">設定すると結果画面に「PayPayで送る」ボタンが表示されます（qr.paypay.ne.jp / p.paypay.ne.jp のみ許可）</div>
+  </div>
+
   <div class="base-url-row">
     <label>App URL</label>
     <input type="text" id="base-url" readonly />
@@ -500,14 +506,26 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-function buildUrl(name, expected, people, strategy, baseUrl) {
+function isValidPayPayUrl(url) {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' &&
+      (u.hostname === 'qr.paypay.ne.jp' || u.hostname === 'p.paypay.ne.jp');
+  } catch (_) { return false; }
+}
+
+function buildUrl(name, expected, people, strategy, baseUrl, paypay) {
   const u = new URL(baseUrl);
   u.searchParams.set('expected', String(expected));
   u.searchParams.set('people', String(people));
   u.searchParams.set('strategy', strategy);
   u.searchParams.set('name', name.trim());
+  if (paypay && isValidPayPayUrl(paypay)) u.searchParams.set('paypay', paypay);
   return u.toString();
 }
+
+const paypayUrlInput = document.getElementById('paypay-url');
 
 // Generate
 btnGenerate.addEventListener('click', async () => {
@@ -515,7 +533,13 @@ btnGenerate.addEventListener('click', async () => {
   const people   = parseInt(peopleInput.value) || 6;
   const strategy = strategySelect.value;
   const baseUrl  = baseUrlInput.value || defaultBase;
+  const paypayRaw = paypayUrlInput.value.trim();
   const namesRaw = namesTextarea.value.trim();
+
+  if (paypayRaw && !isValidPayPayUrl(paypayRaw)) {
+    showToast('PayPay URLは qr.paypay.ne.jp か p.paypay.ne.jp のみ対応');
+    return;
+  }
 
   let names;
   if (namesRaw) {
@@ -526,7 +550,7 @@ btnGenerate.addEventListener('click', async () => {
 
   generatedEntries = names.map(name => ({
     name,
-    url: buildUrl(name, expected, people, strategy, baseUrl),
+    url: buildUrl(name, expected, people, strategy, baseUrl, paypayRaw),
     expected, people, strategy,
     amount: null, tier: null,
   }));

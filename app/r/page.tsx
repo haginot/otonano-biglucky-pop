@@ -52,6 +52,16 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 
+function isValidPayPayUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' &&
+      (u.hostname === 'qr.paypay.ne.jp' || u.hostname === 'p.paypay.ne.jp');
+  } catch {
+    return false;
+  }
+}
+
 export default async function R({ searchParams }: Props) {
   const p = await searchParams;
   const forward = new URLSearchParams();
@@ -59,6 +69,8 @@ export default async function R({ searchParams }: Props) {
     const v = one(p[k]);
     if (v) forward.set(k, v);
   });
+  const paypay = one(p.paypay);
+  if (paypay && isValidPayPayUrl(paypay)) forward.set('paypay', paypay);
   forward.set('result', '1');
   const target = `/?${forward.toString()}`;
 

@@ -2012,11 +2012,27 @@ main { padding: 20px 16px 40px; max-width: 520px; }
     }
 
     // ========== ResultScreen (compact, no-scroll) ==========
-    function ResultScreen({ spinning, ready, name, strategy, expected, amount, tier, tierMeta, verse, seedHex, speed, shareUrl, onCopy, onReset, onStartSpin }) {
+    function ResultScreen({ spinning, ready, name, strategy, expected, amount, tier, tierMeta, verse, seedHex, speed, shareUrl, paypayUrl, onCopy, onReset, onStartSpin }) {
       const delta = amount - expected;
       const pct = ((amount / expected - 1) * 100).toFixed(1);
       const [progress, setProgress] = useState(0);
       const [shareOpen, setShareOpen] = useState(false);
+      const [amountCopied, setAmountCopied] = useState(false);
+      const amountInt = Math.round(amount);
+      const copyAmount = async () => {
+        const text = String(amountInt);
+        let ok = false;
+        try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); ok = true; } } catch (_) {}
+        if (!ok) {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            ok = document.execCommand('copy'); document.body.removeChild(ta);
+          } catch (_) {}
+        }
+        if (ok) { setAmountCopied(true); setTimeout(() => setAmountCopied(false), 2000); }
+      };
       useEffect(() => { if (!spinning) setProgress(1); else setProgress(0); }, [spinning]);
       const liveAmount = spinning ? Math.round(amount * Math.pow(progress, 1.2)) : amount;
 
@@ -2068,6 +2084,32 @@ main { padding: 20px 16px 40px; max-width: 520px; }
                     {delta >= 0 ? '+' : ''}{delta.toLocaleString('en-US')}円 ({pct}%)
                   </b></span>
                 </div>
+                {paypayUrl && (
+                  <div style={{ margin:'6px 0 14px', padding:'12px 14px', background:'oklch(0.18 0.05 150 / 0.6)',
+                    border:'1px solid oklch(0.82 0.14 85 / 0.3)', borderRadius:6 }}>
+                    <div style={{ fontFamily:'var(--font-mono)', fontSize:10, letterSpacing:'0.22em',
+                      textTransform:'uppercase', color:'var(--gold-dim)', marginBottom:8 }}>
+                      PAY VIA PAYPAY
+                    </div>
+                    <div style={{ display:'flex', gap:8, alignItems:'stretch' }}>
+                      <button onClick={copyAmount} className="cta ghost"
+                        style={{ flex:'1 1 50%', padding:'10px 12px', fontSize:13,
+                          display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                        {amountCopied ? '✓ コピー済み' : `¥${amountInt.toLocaleString('en-US')} をコピー`}
+                      </button>
+                      <a href={paypayUrl} target="_blank" rel="noopener noreferrer"
+                        className="cta"
+                        style={{ flex:'1 1 50%', padding:'10px 12px', fontSize:13, textDecoration:'none',
+                          display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        PayPayで送る →
+                      </a>
+                    </div>
+                    <div style={{ marginTop:8, fontSize:10, color:'var(--text-dim)',
+                      fontFamily:'var(--font-mono)', letterSpacing:'0.08em', textAlign:'center' }}>
+                      ① 金額をコピー → ② PayPayを開く → ③ 金額欄にペースト
+                    </div>
+                  </div>
+                )}
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                   <button className="cta" style={{ width:'100%' }} onClick={onCopy}>◉ シェアURLをコピー</button>
                   <button className="cta ghost" style={{ width:'100%' }} onClick={onReset}>もう一度</button>
@@ -2133,15 +2175,26 @@ main { padding: 20px 16px 40px; max-width: 520px; }
     }
 
     // ========== App ==========
+    function isValidPayPayUrl(url) {
+      if (!url) return false;
+      try {
+        const u = new URL(url);
+        return u.protocol === 'https:' &&
+          (u.hostname === 'qr.paypay.ne.jp' || u.hostname === 'p.paypay.ne.jp');
+      } catch (_) { return false; }
+    }
+
     function useQueryParams() {
       const read = () => {
         const p = new URLSearchParams(window.location.search);
+        const paypayRaw = p.get('paypay') || '';
         return {
           expected: parseInt(p.get('expected') || '5000', 10),
           people: parseInt(p.get('people') || '6', 10),
           strategy: p.get('strategy') || '',
           name: p.get('name') || '',
           result: p.get('result') === '1',
+          paypay: isValidPayPayUrl(paypayRaw) ? paypayRaw : '',
         };
       };
       const [params, setParams] = useState(read);
@@ -2259,8 +2312,9 @@ main { padding: 20px 16px 40px; max-width: 520px; }
         if (meta) u.searchParams.set('hue', String(meta.hue));
         if (result.seedHex) u.searchParams.set('seed', result.seedHex);
         if (result.verse) u.searchParams.set('verse', result.verse);
+        if (params.paypay) u.searchParams.set('paypay', params.paypay);
         return u.toString();
-      }, [result, name, expected, people, strategy]);
+      }, [result, name, expected, people, strategy, params.paypay]);
 
       const copyShare = async () => {
         const url = shareUrl; if (!url) return;
@@ -2308,6 +2362,7 @@ main { padding: 20px 16px 40px; max-width: 520px; }
               expected={expected} amount={result.amount}
               tier={result.tier} tierMeta={tierMeta} verse={result.verse}
               seedHex={result.seedHex} speed={speed} shareUrl={shareUrl}
+              paypayUrl={params.paypay}
               onCopy={copyShare} onReset={reset}
               onStartSpin={startSpin} ready={screen === 'ready'}
             />
