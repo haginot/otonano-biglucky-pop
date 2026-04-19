@@ -1,5 +1,8 @@
-/* @jsxImportSource react */
-import { unstable_createNodejsStream } from '@vercel/og';
+import { ImageResponse } from 'next/og';
+
+export const runtime = 'edge';
+export const contentType = 'image/png';
+export const size = { width: 1200, height: 630 };
 
 const GOLD = '#E7C16A';
 const GOLD_DIM = '#B98E3B';
@@ -13,27 +16,42 @@ const NEON_GREEN = '#6FC48B';
 
 async function loadFont(family: string, weight: number, text: string): Promise<ArrayBuffer> {
   const cssUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&text=${encodeURIComponent(text)}&display=swap`;
-  // Google Fonts returns different formats (woff2 / woff / truetype) depending
-  // on the User-Agent. We want truetype/opentype for satori. Linux UA reliably
-  // returns truetype; Chrome Mac returns woff2.
-  // Simple User-Agent makes Google Fonts fall back to TTF (satori requires TTF/OTF, not WOFF/WOFF2).
-  const cssRes = await fetch(cssUrl, {
-    headers: { 'User-Agent': 'Node.js' },
-  });
-  if (!cssRes.ok) throw new Error(`Failed to fetch Google Fonts CSS for ${family} ${weight}: ${cssRes.status}`);
+  // Simple UA forces Google Fonts to return a TTF — satori can't parse WOFF/WOFF2.
+  const cssRes = await fetch(cssUrl, { headers: { 'User-Agent': 'Node.js' } });
+  if (!cssRes.ok) throw new Error(`fonts.googleapis.com ${cssRes.status} for ${family} ${weight}`);
   const css = await cssRes.text();
   const match = css.match(/src:\s*url\(([^)]+)\)/);
   if (!match) throw new Error(`Font URL not found in CSS for ${family} ${weight}: ${css.slice(0, 200)}`);
-  const fontUrl = match[1].replace(/['"]/g, '');
-  const fontRes = await fetch(fontUrl);
-  if (!fontRes.ok) throw new Error(`Failed to fetch font for ${family} ${weight}: ${fontRes.status}`);
+  const fontRes = await fetch(match[1].replace(/['"]/g, ''));
+  if (!fontRes.ok) throw new Error(`Font fetch ${fontRes.status} for ${family} ${weight}`);
   return await fontRes.arrayBuffer();
 }
 
-export default async function handler(req: any, res: any): Promise<void> {
-  console.log('[og] handler entry', req.url);
+const STRATEGY_JA: Record<string, string> = {
+  stable: '安定志向',
+  gambler: '一発屋',
+  chaos: '運任せ',
+  risk: 'リスク志向',
+  fortune: '富裕志向',
+};
+const TIER_LABEL: Record<string, string> = {
+  miracle: 'MIRACLE',
+  blessed: 'BLESSED',
+  neutral: 'NEUTRAL',
+  pain: 'PAIN',
+  doom: 'DOOM',
+};
+const DEFAULT_VERSE: Record<string, string> = {
+  miracle: 'ほぼ無料。神に愛されし者。',
+  blessed: 'つつましい勝利、されど勝利。',
+  neutral: '可もなく不可もなく、粛々と。',
+  pain: 'ちょっと痛い。だが耐えられぬほどではない。',
+  doom: 'あなたの献身で会は成り立ちました。',
+};
+
+export async function GET(req: Request): Promise<Response> {
   try {
-    const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+    const url = new URL(req.url);
     const p = url.searchParams;
 
     const name = (p.get('name') || '').slice(0, 32) || 'あなた';
@@ -45,28 +63,6 @@ export default async function handler(req: any, res: any): Promise<void> {
     const hueRaw = parseInt(p.get('hue') || '85', 10);
     const hue = Number.isFinite(hueRaw) ? ((hueRaw % 360) + 360) % 360 : 85;
     const verse = (p.get('verse') || '').slice(0, 64);
-
-    const STRATEGY_JA: Record<string, string> = {
-      stable: '安定志向',
-      gambler: '一発屋',
-      chaos: '運任せ',
-      risk: 'リスク志向',
-      fortune: '富裕志向',
-    };
-    const TIER_LABEL: Record<string, string> = {
-      miracle: 'MIRACLE',
-      blessed: 'BLESSED',
-      neutral: 'NEUTRAL',
-      pain: 'PAIN',
-      doom: 'DOOM',
-    };
-    const DEFAULT_VERSE: Record<string, string> = {
-      miracle: 'ほぼ無料。神に愛されし者。',
-      blessed: 'つつましい勝利、されど勝利。',
-      neutral: '可もなく不可もなく、粛々と。',
-      pain: 'ちょっと痛い。だが耐えられぬほどではない。',
-      doom: 'あなたの献身で会は成り立ちました。',
-    };
 
     const tierLabel = TIER_LABEL[tier] || 'NEUTRAL';
     const strategyJa = STRATEGY_JA[strategy] || strategy;
@@ -101,7 +97,7 @@ export default async function handler(req: any, res: any): Promise<void> {
       loadFont('Noto Serif JP', 700, jpText),
     ]);
 
-    const stream = await unstable_createNodejsStream(
+    return new ImageResponse(
       (
         <div
           style={{
@@ -252,15 +248,11 @@ export default async function handler(req: any, res: any): Promise<void> {
         ],
       }
     );
-
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=31536000, stale-while-revalidate=86400');
-    res.statusCode = 200;
-    stream.pipe(res);
   } catch (err) {
-    console.error('OG generation failed', err);
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.end(`OG generation failed: ${err instanceof Error ? err.message : String(err)}`);
+    const msg = err instanceof Error ? err.message : String(err);
+    return new Response(`OG generation failed: ${msg}`, {
+      status: 500,
+      headers: { 'content-type': 'text/plain; charset=utf-8' },
+    });
   }
 }
