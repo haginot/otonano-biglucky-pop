@@ -2203,8 +2203,9 @@ main { padding: 20px 16px 40px; max-width: 520px; }
         });
       };
 
-      const expected = tweaks.expected || params.expected || 5000;
-      const people = params.people || 6;
+      const urlParams = new URLSearchParams(window.location.search);
+      const expected = urlParams.has('expected') ? params.expected : (tweaks.expected || params.expected || 5000);
+      const people = urlParams.has('people') ? params.people : (params.people || 6);
       const spread = tweaks.spread ?? 1;
       const speed = tweaks.speed ?? 1;
       const theme = tweaks.theme || 'casino';
