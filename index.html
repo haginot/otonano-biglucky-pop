@@ -1,0 +1,2317 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>大人のビッくらポン · Oneshot Casino</title>
+
+  <!-- OGP / Twitter (share preview). The SVG is inlined as data URI fallback;
+       for real unfurls the host must serve a proper image — Slack/X prefer PNG. -->
+  <meta property="og:title" content="大人のビッくらポン — 飲み会の運命を賽に委ねる" />
+  <meta property="og:description" content="安定志向・ギャンブラー・運任せ… 志向を選んで名前を入れるだけ。あなたの支払い金額を確率分布が決める。" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style id="inlined-base">
+/* ==== Oneshot Casino — base styles ==== */
+:root {
+  --felt-0: oklch(0.14 0.035 150);
+  --felt-1: oklch(0.18 0.045 150);
+  --felt-2: oklch(0.24 0.05 150);
+  --felt-3: oklch(0.32 0.055 150);
+  --gold: oklch(0.82 0.14 85);
+  --gold-dim: oklch(0.62 0.12 85);
+  --gold-deep: oklch(0.48 0.11 80);
+  --cream: oklch(0.96 0.02 85);
+  --ink: oklch(0.08 0.02 150);
+  --neon-red: oklch(0.7 0.25 25);
+  --neon-cyan: oklch(0.82 0.17 200);
+  --neon-purple: oklch(0.72 0.22 310);
+  --neon-magenta: oklch(0.72 0.26 340);
+  --edge: oklch(0.3 0.04 150);
+  --text: oklch(0.94 0.02 85);
+  --text-dim: oklch(0.72 0.03 85);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.64, 0, 0.78, 0);
+  --font-display: 'Playfair Display', 'Cormorant Garamond', 'Noto Serif JP', serif;
+  --font-ui: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Menlo', monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { background: var(--felt-0); }
+body {
+  min-height: 100vh;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, oklch(0.28 0.06 150 / 0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% 100%, oklch(0.22 0.05 145 / 0.6) 0%, transparent 70%),
+    linear-gradient(180deg, var(--felt-0), var(--felt-1) 40%, var(--felt-0));
+  overflow-x: hidden;
+}
+.gold-frame {
+  border: 1px solid oklch(0.82 0.14 85 / 0.35);
+  box-shadow:
+    inset 0 0 0 1px oklch(0.82 0.14 85 / 0.15),
+    inset 0 1px 0 oklch(0.82 0.14 85 / 0.4),
+    0 20px 50px oklch(0 0 0 / 0.45);
+  border-radius: 6px;
+  background: linear-gradient(180deg, oklch(0.22 0.05 150 / 0.9), oklch(0.16 0.04 150 / 0.9));
+}
+.serif { font-family: var(--font-display); font-weight: 500; letter-spacing: 0.01em; }
+.mono { font-family: var(--font-mono); letter-spacing: 0.02em; }
+.tracked { letter-spacing: 0.34em; text-transform: uppercase; font-size: 11px; color: var(--gold-dim); }
+.tracked-sm { letter-spacing: 0.2em; text-transform: uppercase; font-size: 10px; color: var(--text-dim); }
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 28px 96px;
+}
+@media (max-width: 640px) { main { padding: 28px 16px 72px; } }
+.brand { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 20px; }
+.brand-mark {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(22px, 5vw, 38px);
+  line-height: 1;
+  background: linear-gradient(180deg, oklch(0.95 0.12 85), oklch(0.68 0.14 82));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 30px oklch(0.82 0.14 85 / 0.25);
+  position: relative;
+}
+.brand-mark::before, .brand-mark::after {
+  content: '✦';
+  color: oklch(0.82 0.14 85 / 0.6);
+  font-size: 0.5em;
+  margin: 0 0.4em;
+  vertical-align: middle;
+}
+.brand-sub { color: var(--text-dim); letter-spacing: 0.4em; text-transform: uppercase; font-size: 9px; }
+.card { padding: clamp(24px, 4vw, 44px); }
+.strategies { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.strategy-slider-wrap { display: none; position: relative; margin: 0 calc(-1 * clamp(24px, 4vw, 44px)); }
+.strategy-slider {
+  display: flex; gap: 12px;
+  padding: 4px clamp(24px, 4vw, 44px) 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-padding: clamp(24px, 4vw, 44px);
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.strategy-slider::-webkit-scrollbar { display: none; }
+.strategy-slider .strategy-card { flex: 0 0 78%; max-width: 320px; min-height: 180px; scroll-snap-align: center; scroll-snap-stop: always; }
+.strategy-slider-dots { display: flex; justify-content: center; gap: 6px; margin-top: 4px; }
+.strategy-slider-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.82 0.14 85 / 0.25); transition: all 0.2s var(--ease-out); border: 0; padding: 0; }
+.strategy-slider-dots .dot.active { background: var(--gold); box-shadow: 0 0 8px var(--gold); transform: scale(1.4); }
+.strategy-slider-hint { display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(24px, 4vw, 44px); margin-top: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim); pointer-events: none; }
+.strategy-slider-hint .arrow { opacity: 0.5; animation: arrow-pulse 1.6s var(--ease-out) infinite; }
+@keyframes arrow-pulse { 0%,100% { transform: translateX(0); opacity: 0.5; } 50% { transform: translateX(4px); opacity: 1; } }
+@media (max-width: 720px) { .strategies { display: none; } .strategy-slider-wrap { display: block; } }
+.strategy-card {
+  position: relative; padding: 16px 16px 18px; border-radius: 4px;
+  border: 1px solid oklch(0.82 0.14 85 / 0.2);
+  background: linear-gradient(180deg, oklch(0.22 0.05 150 / 0.6), oklch(0.14 0.035 150 / 0.8));
+  cursor: pointer; transition: all 0.25s var(--ease-out); text-align: left; color: inherit; font: inherit; overflow: hidden; -webkit-tap-highlight-color: transparent;
+}
+.strategy-card:hover { transform: translateY(-2px); border-color: oklch(0.82 0.14 85 / 0.5); box-shadow: 0 12px 30px oklch(0 0 0 / 0.4); }
+.strategy-card.active { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset, 0 0 30px oklch(0.82 0.14 85 / 0.25), 0 12px 30px oklch(0 0 0 / 0.4); background: linear-gradient(180deg, oklch(0.3 0.07 150 / 0.7), oklch(0.2 0.05 150 / 0.9)); }
+.strategy-card .accent { position: absolute; inset: auto 0 0 0; height: 2px; background: var(--accent, var(--gold)); opacity: 0.5; }
+.strategy-card.active .accent { opacity: 1; box-shadow: 0 0 14px var(--accent, var(--gold)); }
+.strategy-card .glyph { font-size: 28px; margin-bottom: 8px; filter: drop-shadow(0 0 16px var(--accent, var(--gold))); }
+.strategy-card h3 { margin: 0 0 4px; font-family: var(--font-display); font-size: 20px; font-weight: 500; color: var(--cream); }
+.strategy-card .sub-en { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em; color: var(--accent, var(--gold)); margin-bottom: 10px; }
+.strategy-card .tagline { font-size: 12px; line-height: 1.55; color: var(--text-dim); }
+.input-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: stretch; margin-top: 8px; }
+@media (max-width: 560px) { .input-row { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold-dim); }
+.field > input, .field > select {
+  height: 54px; padding: 0 18px;
+  background: oklch(0.1 0.025 150 / 0.9);
+  border: 1px solid oklch(0.82 0.14 85 / 0.25);
+  color: var(--cream); font-family: var(--font-display); font-size: 22px; border-radius: 4px; outline: none; transition: border-color 0.2s;
+}
+.field > input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px oklch(0.82 0.14 85 / 0.12); }
+.cta {
+  height: 54px; padding: 0 32px;
+  background: linear-gradient(180deg, oklch(0.88 0.15 85), oklch(0.65 0.13 80));
+  color: var(--ink); border: 1px solid oklch(0.5 0.11 80); border-radius: 4px;
+  font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: 0.04em;
+  cursor: pointer; box-shadow: 0 10px 30px oklch(0.82 0.14 85 / 0.25), inset 0 1px 0 oklch(1 0 0 / 0.5);
+  transition: transform 0.15s var(--ease-out), box-shadow 0.2s; white-space: nowrap; -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 560px) { .cta { width: 100%; height: 58px; font-size: 18px; } }
+.cta:hover { transform: translateY(-1px); box-shadow: 0 14px 40px oklch(0.82 0.14 85 / 0.35), inset 0 1px 0 oklch(1 0 0 / 0.5); }
+.cta:active { transform: translateY(1px); }
+.cta:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.cta.ghost { background: transparent; color: var(--gold); border-color: oklch(0.82 0.14 85 / 0.5); box-shadow: none; }
+.cta.ghost:hover { background: oklch(0.82 0.14 85 / 0.08); }
+.expected {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 2vw, 32px); align-items: center;
+  padding: 16px 18px; margin-bottom: 24px;
+  border: 1px solid oklch(0.82 0.14 85 / 0.25); border-radius: 4px;
+  background: linear-gradient(90deg, oklch(0.16 0.04 150 / 0.9), oklch(0.22 0.05 150 / 0.7));
+}
+.expected .stat { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.expected .stat .k { font-family: var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; font-size: 9px; color: var(--gold-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.expected .stat .v { font-family: var(--font-display); font-size: clamp(18px, 2.5vw, 26px); color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) { .expected { grid-template-columns: 1fr 1fr; padding: 14px 16px; } .expected .stat.hide-mobile { display: none; } }
+.pdf-chart { position: relative; height: 90px; margin-top: 14px; border-top: 1px dashed oklch(0.82 0.14 85 / 0.18); padding-top: 10px; }
+.pdf-chart svg { width: 100%; height: 100%; display: block; }
+.pdf-label { position: absolute; top: 12px; right: 0; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.15em; }
+.sec-head { display: flex; align-items: baseline; gap: 16px; margin: 28px 0 14px; flex-wrap: nowrap; }
+.sec-head h2 { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 22px; color: var(--cream); white-space: nowrap; flex: 0 0 auto; }
+.sec-head .rule { flex: 1 1 auto; min-width: 20px; height: 1px; background: linear-gradient(90deg, oklch(0.82 0.14 85 / 0.4), transparent); }
+.sec-head .tracked-sm, .sec-head .mono { flex: 0 0 auto; white-space: nowrap; }
+@media (max-width: 560px) { .sec-head .tracked-sm, .sec-head .mono { display: none; } .sec-head { margin: 22px 0 10px; } .sec-head h2 { font-size: 18px; } }
+.tweaks {
+  position: fixed; right: 16px; bottom: 16px; width: 260px;
+  background: oklch(0.12 0.03 150 / 0.95);
+  border: 1px solid oklch(0.82 0.14 85 / 0.3); border-radius: 6px; padding: 14px; z-index: 80;
+  box-shadow: 0 20px 50px oklch(0 0 0 / 0.6); backdrop-filter: blur(12px);
+  max-height: calc(100vh - 32px); overflow-y: auto;
+}
+@media (max-width: 640px) { .tweaks { left: 12px; right: 12px; bottom: 12px; width: auto; } }
+.tweaks h4 { margin: 0 0 12px; font-family: var(--font-display); font-size: 14px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+.tweaks .row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.tweaks label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); }
+.tweaks input[type=range] { width: 100%; accent-color: var(--gold); }
+.tweaks input[type=number] { background: oklch(0.08 0.02 150); border: 1px solid oklch(0.82 0.14 85 / 0.25); color: var(--cream); padding: 6px 8px; border-radius: 3px; font-family: var(--font-mono); }
+.tweaks select { background: oklch(0.08 0.02 150); color: var(--cream); border: 1px solid oklch(0.82 0.14 85 / 0.25); padding: 6px 8px; border-radius: 3px; font-family: var(--font-mono); }
+.screen { animation: screen-in 0.55s var(--ease-out) both; }
+@keyframes screen-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Result / stage */
+@media (max-width: 640px) {
+  .stage { padding: 32px 12px !important; min-height: 260px !important; }
+  .amount-display { font-size: clamp(48px, 18vw, 88px) !important; }
+  .seed-strip { font-size: 10px !important; gap: 8px 16px !important; padding: 10px 4px !important; }
+  .share-card-wrap { margin-top: 24px !important; }
+  .verse { font-size: 14px !important; padding: 0 8px; }
+  .subtitle-big { font-size: 20px !important; }
+  .tier-chip { font-size: 13px !important; padding: 6px 14px !important; letter-spacing: 0.12em !important; }
+  .actions { flex-direction: column !important; }
+  .actions .cta { width: 100% !important; }
+}
+.stage { position: relative; padding: 44px 20px; display: grid; place-items: center; min-height: 360px; overflow: hidden; border: 1px solid oklch(0.82 0.14 85 / 0.25); border-radius: 6px; background: radial-gradient(ellipse at center, oklch(0.28 0.07 150 / 0.9), oklch(0.1 0.03 150) 75%); }
+.stage::before, .stage::after { content: ''; position: absolute; top: 50%; width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim) 50%, transparent); opacity: 0.45; }
+.stage::before { left: 6px; transform: translateY(-50%); }
+.stage::after { right: 6px; transform: translateY(-50%); }
+.stage .spotlight { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 60% at 50% 50%, oklch(0.82 0.14 85 / 0.06) 0%, transparent 70%); animation: crosshair-pulse 3s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes crosshair-pulse { from { opacity: 0.6; transform: scale(0.97); } to { opacity: 1; transform: scale(1.02); } }
+.odo { display: inline-flex; gap: 4px; padding: 10px 18px; background: linear-gradient(180deg, oklch(0.06 0.02 150), oklch(0.12 0.03 150)); border: 1px solid oklch(0.82 0.14 85 / 0.45); border-radius: 6px; box-shadow: inset 0 2px 8px oklch(0 0 0 / 0.8), 0 0 40px oklch(0.82 0.14 85 / 0.2); font-family: var(--font-display); }
+.odo .digit { position: relative; width: 0.7em; height: 1em; overflow: hidden; display: inline-block; }
+.odo .digit .col { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; transition: transform 0.1s linear; }
+.odo .digit .col span { height: 1em; line-height: 1; display: block; text-align: center; }
+.odo .yen { font-family: var(--font-display); font-weight: 500; margin-right: 4px; color: var(--gold); }
+.odo .comma { color: var(--gold-dim); }
+.amount-display { font-family: var(--font-display); font-size: clamp(56px, 12vw, 140px); line-height: 1; font-weight: 500; letter-spacing: -0.02em; color: var(--cream); text-shadow: 0 0 20px oklch(0.82 0.14 85 / 0.4), 0 4px 40px oklch(0 0 0 / 0.5); display: flex; align-items: baseline; gap: 6px; }
+.amount-display .y { font-size: 0.45em; color: var(--gold); align-self: flex-start; margin-top: 0.18em; }
+.amount-display .unit { font-size: 0.35em; color: var(--gold); margin-left: 4px; font-family: var(--font-display); }
+.result-screen { text-align: center; }
+.burst { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 60; }
+.burst .piece { position: absolute; top: 50%; left: 50%; will-change: transform, opacity; }
+.dart-rain { position: fixed; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
+.dart-rain .dart-drop { position: absolute; top: -50px; display: block; animation: dart-drop-fall linear infinite; }
+@keyframes dart-drop-fall { to { transform: translateY(115vh); } }
+.tier-chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 20px; border: 1px solid currentColor; border-radius: 999px; font-family: var(--font-display); font-size: 16px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.82 0.18 var(--tier-hue, 85)); background: oklch(0.82 0.18 var(--tier-hue, 85) / 0.08); box-shadow: 0 0 24px oklch(0.82 0.18 var(--tier-hue, 85) / 0.35); }
+.tier-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.82 0.18 var(--tier-hue, 85)); box-shadow: 0 0 10px oklch(0.82 0.18 var(--tier-hue, 85)); }
+.subtitle-big { font-family: var(--font-display); font-size: clamp(22px, 3vw, 32px); color: var(--cream); margin: 18px 0 6px; font-weight: 500; }
+.verse { max-width: 520px; margin: 4px auto 28px; color: var(--text-dim); font-size: 15px; line-height: 1.7; font-family: var(--font-display); font-style: italic; }
+.actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+.share-card-wrap { margin: 36px auto 0; max-width: 620px; }
+.share-card-wrap .caption { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; text-align: left; }
+.share-card { width: 100%; aspect-ratio: 1200 / 630; border-radius: 6px; overflow: hidden; border: 1px solid oklch(0.82 0.14 85 / 0.3); box-shadow: 0 20px 50px oklch(0 0 0 / 0.5); }
+.share-card svg { width: 100%; height: 100%; display: block; }
+.copied { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--gold); color: var(--ink); padding: 10px 22px; border-radius: 999px; font-family: var(--font-display); font-weight: 600; letter-spacing: 0.1em; opacity: 0; transition: all 0.3s var(--ease-out); z-index: 200; box-shadow: 0 10px 30px oklch(0.82 0.14 85 / 0.4); }
+.copied.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.seed-strip { margin-top: 28px; padding: 12px 18px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: center; border-top: 1px dashed oklch(0.82 0.14 85 / 0.2); }
+.seed-strip b { color: var(--gold); font-weight: 500; }
+.ticker { position: absolute; top: 50%; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 12px; color: var(--gold); font-size: 18px; transform: translateY(-50%); pointer-events: none; opacity: 0.5; }
+.trail { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; overflow: hidden; }
+.trail .glyph { position: absolute; font-family: var(--font-display); font-size: 180px; color: oklch(0.82 0.14 85 / 0.12); animation: glyph-rise 1.2s var(--ease-out) both; }
+@keyframes glyph-rise { 0% { transform: translateY(60px) scale(0.6); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(-140px) scale(1.4); opacity: 0; } }
+
+/* Themes */
+html[data-theme="ruby"] { --felt-0: oklch(0.14 0.04 15); --felt-1: oklch(0.18 0.05 15); --felt-2: oklch(0.24 0.06 15); --felt-3: oklch(0.32 0.06 15); --gold: oklch(0.85 0.14 70); --gold-dim: oklch(0.62 0.12 70); }
+html[data-theme="midnight"] { --felt-0: oklch(0.13 0.04 250); --felt-1: oklch(0.17 0.05 250); --felt-2: oklch(0.24 0.06 250); --felt-3: oklch(0.32 0.06 250); --gold: oklch(0.85 0.13 220); --gold-dim: oklch(0.62 0.11 220); }
+html[data-theme="obsidian"] { --felt-0: oklch(0.08 0.01 0); --felt-1: oklch(0.12 0.015 0); --felt-2: oklch(0.18 0.02 0); --felt-3: oklch(0.24 0.025 0); --gold: oklch(0.85 0.14 85); --gold-dim: oklch(0.6 0.12 85); }
+
+/* ==== Wizard / mobile-first layout ==== */
+body { overflow-x: hidden; }
+main { padding: 20px 16px 40px; max-width: 520px; }
+@media (max-width: 520px) { main { padding: 12px 10px 32px; } }
+
+.wiz-screen {
+  display: flex; flex-direction: column; align-items: stretch;
+  width: 100%; animation: screen-in 0.4s var(--ease-out) both;
+}
+.wiz-card {
+  border: 1px solid oklch(0.82 0.14 85 / 0.35);
+  box-shadow: inset 0 0 0 1px oklch(0.82 0.14 85 / 0.15), inset 0 1px 0 oklch(0.82 0.14 85 / 0.4), 0 20px 50px oklch(0 0 0 / 0.45);
+  border-radius: 6px;
+  background: linear-gradient(180deg, oklch(0.22 0.05 150 / 0.9), oklch(0.16 0.04 150 / 0.9));
+  padding: 22px 20px 24px; display: flex; flex-direction: column; gap: 0;
+}
+.wiz-meta {
+  display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em;
+  color: var(--gold-dim); margin-bottom: 20px; text-transform: uppercase;
+}
+.wiz-meta b { color: var(--gold); }
+.wiz-step-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.4em;
+  text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px;
+}
+.wiz-title {
+  font-family: var(--font-display); font-size: clamp(24px, 6vw, 36px);
+  color: var(--cream); margin-bottom: 6px; line-height: 1.15;
+}
+.wiz-sub {
+  font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);
+  letter-spacing: 0.08em; margin-bottom: 24px;
+}
+.wiz-input {
+  width: 100%; height: 58px; padding: 0 18px;
+  background: oklch(0.1 0.025 150 / 0.9);
+  border: 1px solid oklch(0.82 0.14 85 / 0.25);
+  color: var(--cream); font-family: var(--font-display); font-size: 24px;
+  border-radius: 4px; outline: none; transition: border-color 0.2s; margin-bottom: 16px;
+}
+.wiz-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px oklch(0.82 0.14 85 / 0.12); }
+.wiz-btn { width: 100%; height: 56px; font-size: 18px; }
+.wiz-back {
+  background: none; border: none; color: var(--gold-dim); font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em; cursor: pointer; text-align: left;
+  padding: 0 0 14px; text-transform: uppercase;
+}
+.wiz-back:hover { color: var(--gold); }
+.wiz-strategy-slider {
+  display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-padding: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  padding: 4px 0 12px; margin: 0 -4px;
+}
+.wiz-strategy-slider::-webkit-scrollbar { display: none; }
+.wiz-strat-card {
+  flex: 0 0 72%; max-width: 280px; scroll-snap-align: center; scroll-snap-stop: always;
+  min-height: 140px;
+}
+.wiz-preview { margin: 12px 0 16px; }
+.wiz-preview-label {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 8px;
+}
+
+/* Compact MiniRoulette */
+.mini-rlt-compact { display: flex; gap: 12px; align-items: center; }
+.mini-rlt-compact .legend { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.mini-rlt-compact .legend-row { display: flex; align-items: center; gap: 6px; }
+.mini-rlt-compact .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.mini-rlt-compact .legend-text { font-size: 9px; color: var(--text-dim); font-family: var(--font-mono); letter-spacing: 0.05em; }
+
+/* ==== Throw overlay button ==== */
+.throw-btn {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  background: oklch(0 0 0 / 0.45);
+  border: none; cursor: pointer; display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; border-radius: 6px;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(1px);
+}
+.throw-btn:hover { background: oklch(0 0 0 / 0.35); }
+.throw-btn:active { background: oklch(0 0 0 / 0.55); }
+.throw-btn::before {
+  content: '◎';
+  font-size: 56px; color: var(--gold);
+  filter: drop-shadow(0 0 20px oklch(0.82 0.14 85 / 0.8));
+  animation: throw-pulse 1.8s ease-in-out infinite;
+  line-height: 1;
+}
+@keyframes throw-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%       { transform: scale(1.12); opacity: 1; }
+}
+.throw-btn-label {
+  font-family: var(--font-display); font-size: clamp(18px, 4vw, 24px);
+  color: var(--cream); letter-spacing: 0.12em;
+  text-shadow: 0 2px 16px oklch(0 0 0 / 0.8);
+}
+
+/* ==== Landing hero ==== */
+.landing-hero {
+  position: relative; overflow: hidden;
+  background: radial-gradient(ellipse 120% 100% at 50% 30%,
+    oklch(0.22 0.07 150 / 0.95) 0%, oklch(0.1 0.03 150) 70%);
+  display: flex; align-items: center; justify-content: center;
+  min-height: 260px; padding: 20px;
+}
+.landing-wheel-wrap {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  opacity: 0.55;
+}
+.landing-wheel-svg {
+  width: 100%; height: 100%; max-height: 340px;
+  animation: landing-wheel-slow 28s linear infinite;
+}
+@keyframes landing-wheel-slow { to { transform: rotate(360deg); } }
+.landing-brand-overlay {
+  position: relative; z-index: 2; text-align: center; pointer-events: none;
+}
+.landing-brand-title {
+  font-family: var(--font-display); font-size: clamp(36px, 10vw, 56px);
+  font-weight: 500; line-height: 1.1;
+  background: linear-gradient(180deg, oklch(0.97 0.12 85) 0%, oklch(0.72 0.14 82) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: none; margin-bottom: 6px;
+  filter: drop-shadow(0 2px 20px oklch(0.82 0.14 85 / 0.4));
+}
+.landing-brand-en {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.4em;
+  text-transform: uppercase; color: oklch(0.82 0.14 85 / 0.7); margin-bottom: 10px;
+}
+.landing-brand-copy {
+  font-family: var(--font-display); font-size: clamp(14px, 3.5vw, 18px);
+  color: oklch(0.88 0.04 85); line-height: 1.6;
+  text-shadow: 0 1px 8px oklch(0 0 0 / 0.8);
+}
+.landing-form {
+  padding: 20px 20px 24px;
+  background: linear-gradient(180deg, oklch(0.22 0.05 150 / 0.9), oklch(0.16 0.04 150 / 0.9));
+}
+
+/* ==== Plinko stage ==== */
+.plinko-stage { min-height: 620px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 18px 12px 24px; }
+.plinko { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+.plinko-amount { margin-top: 14px; text-align: center; }
+.plinko-amount .amount-display { font-size: clamp(44px, 7vw, 72px); }
+@media (max-width: 600px) {
+  .plinko-stage { min-height: auto; padding: 12px 4px 20px; }
+  .plinko-amount .amount-display { font-size: clamp(36px, 10vw, 54px); }
+}
+
+/* ==== Spin backdrops (per distribution) ==== */
+.amount-display { position: relative; z-index: 3; will-change: transform; }
+.stage.spinning { animation: stage-breathe 0.8s var(--ease-out) infinite alternate; }
+@keyframes stage-breathe { from { box-shadow: inset 0 0 30px oklch(0 0 0 / 0.4); } to { box-shadow: inset 0 0 80px var(--stage-glow, oklch(0.82 0.14 85 / 0.3)); } }
+
+.stage-stable.spinning { --stage-glow: oklch(0.82 0.17 200 / 0.25); }
+.stage-gambler.spinning { --stage-glow: oklch(0.7 0.25 25 / 0.4); animation-duration: 0.25s; }
+.stage-risktaker.spinning { --stage-glow: oklch(0.72 0.22 310 / 0.4); animation-duration: 0.15s; }
+.stage-fortune.spinning { --stage-glow: oklch(0.82 0.14 85 / 0.35); }
+.stage-jackpot.spinning { --stage-glow: oklch(0.7 0.25 25 / 0.35); }
+
+/* Dart-Stable — dartboard rings gently pulsing */
+.bg-stable { position: absolute; inset: 0; pointer-events: none; overflow: hidden; display: grid; place-items: center; }
+.bg-stable svg { width: 86%; height: 86%; animation: board-breathe 2s ease-in-out infinite alternate; }
+@keyframes board-breathe { from { opacity: 0.13; transform: scale(0.96); } to { opacity: 0.24; transform: scale(1.03); } }
+.bg-stable .aim-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, transparent, oklch(0.82 0.17 200 / 0.4), transparent); animation: aim-sweep 2.4s ease-in-out infinite alternate; transform-origin: center; }
+@keyframes aim-sweep { from { transform: rotate(-12deg); opacity: 0.4; } to { transform: rotate(12deg); opacity: 0.9; } }
+
+/* Dart-Gambler — dartboard spinning + dart launch */
+.bg-gambler { position: absolute; inset: 0; pointer-events: none; overflow: hidden; display: grid; place-items: center; }
+.bg-gambler .board-spin { width: 110%; height: 110%; animation: board-spin-fast 0.6s linear infinite; opacity: 0.3; filter: drop-shadow(0 0 16px oklch(0.7 0.25 25 / 0.5)); }
+@keyframes board-spin-fast { to { transform: rotate(360deg); } }
+.bg-gambler .flash { position: absolute; inset: 0; animation: gamble-flash 0.18s steps(2) infinite; mix-blend-mode: screen; }
+@keyframes gamble-flash { 0%,49% { background: oklch(0.7 0.25 25 / 0.12); } 50%,100% { background: transparent; } }
+
+/* Dart-RiskTaker — dart trajectories radiating */
+.bg-risk { position: absolute; inset: 0; pointer-events: none; overflow: hidden; display: grid; place-items: center; }
+.bg-risk .traj { position: absolute; top: 50%; left: 50%; height: 1px; transform-origin: left center; background: linear-gradient(90deg, oklch(0.72 0.22 310 / 0.9), transparent); animation: traj-flash 0.5s steps(2) infinite; }
+.bg-risk .traj-0 { width: 200px; transform: rotate(0deg); animation-delay: 0s; }
+.bg-risk .traj-1 { width: 260px; transform: rotate(45deg); animation-delay: 0.1s; }
+.bg-risk .traj-2 { width: 180px; transform: rotate(90deg); animation-delay: 0.05s; }
+.bg-risk .traj-3 { width: 240px; transform: rotate(135deg); animation-delay: 0.15s; }
+.bg-risk .traj-4 { width: 210px; transform: rotate(200deg); animation-delay: 0.08s; }
+.bg-risk .traj-5 { width: 230px; transform: rotate(270deg); animation-delay: 0.12s; }
+.bg-risk .traj-6 { width: 190px; transform: rotate(310deg); animation-delay: 0.03s; }
+@keyframes traj-flash { 0%,40% { opacity: 1; } 41%,100% { opacity: 0; } }
+
+/* Dart-Fortune — slowly rotating dartboard + sector highlights */
+.bg-fortune { position: absolute; inset: 0; pointer-events: none; overflow: hidden; display: grid; place-items: center; }
+.bg-fortune .board-rot { width: 90%; height: 90%; opacity: 0.2; animation: board-spin-slow 4s linear infinite; }
+.bg-fortune .score-flash { position: absolute; font-family: var(--font-display); font-size: 72px; color: var(--gold); opacity: 0; animation: score-pop 0.6s ease-out infinite; letter-spacing: 0.02em; }
+@keyframes board-spin-slow { to { transform: rotate(360deg); } }
+@keyframes score-pop { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 0.25; transform: scale(1.1); } 60% { opacity: 0.18; } 100% { opacity: 0; transform: scale(1.4); } }
+
+/* Dart-Jackpot — bullseye flash + expanding rings */
+.bg-jackpot { position: absolute; inset: 0; pointer-events: none; overflow: hidden; display: grid; place-items: center; }
+.bg-jackpot .bull { position: absolute; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle, oklch(0.9 0.25 25) 30%, oklch(0.6 0.23 25) 70%); box-shadow: 0 0 60px oklch(0.7 0.25 25); animation: bull-strobe 0.25s steps(2) infinite; }
+@keyframes bull-strobe { 0%,49% { opacity: 1; transform: scale(1); } 50%,100% { opacity: 0.15; transform: scale(0.6); } }
+.bg-jackpot .dart-ring { position: absolute; border: 2px solid oklch(0.7 0.25 25); border-radius: 50%; opacity: 0; animation: dartring-expand 1s ease-out infinite; }
+.bg-jackpot .dart-ring-2 { animation-delay: 0.5s; }
+@keyframes dartring-expand { 0% { width: 44px; height: 44px; opacity: 0.9; } 100% { width: 540px; height: 540px; opacity: 0; } }
+  </style>
+</head>
+<body>
+  <main id="root"></main>
+
+  <script>
+    // Tweak defaults
+    window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "expected": 5000,
+      "spread": 1,
+      "speed": 1,
+      "theme": "casino"
+    }/*EDITMODE-END*/;
+  </script>
+
+  <!-- Plain JS libs (inlined) -->
+  <script>
+  // ==== PRNG ====
+  async function sha256Bytes(str) {
+    const buf = new TextEncoder().encode(str);
+    const digest = await crypto.subtle.digest('SHA-256', buf);
+    return new Uint8Array(digest);
+  }
+  function bytesToSeed128(bytes) {
+    const view = new DataView(bytes.buffer, bytes.byteOffset, 16);
+    return [view.getUint32(0,true), view.getUint32(4,true), view.getUint32(8,true), view.getUint32(12,true)];
+  }
+  function rotl(x,k){ return ((x<<k)|(x>>>(32-k)))>>>0; }
+  function xoshiro128ss(stateArr){
+    let [s0,s1,s2,s3] = stateArr;
+    if ((s0|s1|s2|s3)===0) s0=0x9E3779B9;
+    return function next(){
+      const result = (rotl((s1*5)>>>0,7)*9)>>>0;
+      const t = (s1<<9)>>>0;
+      s2 ^= s0; s3 ^= s1; s1 ^= s2; s0 ^= s3;
+      s2 ^= t; s3 = rotl(s3,11);
+      return result / 4294967296;
+    };
+  }
+  async function makeRng(seedString){
+    const bytes = await sha256Bytes(seedString);
+    const state = bytesToSeed128(bytes);
+    const rng = xoshiro128ss(state);
+    for (let i=0;i<4;i++) rng();
+    const hex = Array.from(bytes.slice(0,4)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    rng.seedHex = hex;
+    return rng;
+  }
+  function sampleNormal(rng, mean=0, std=1){
+    let u1 = rng(); const u2 = rng();
+    if (u1 < 1e-12) u1 = 1e-12;
+    const z = Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    return mean + z*std;
+  }
+  function sampleUniform(rng,min,max){ return min + rng()*(max-min); }
+  function sampleGamma(rng, shape){
+    if (shape<1) { const g = sampleGamma(rng, shape+1); return g * Math.pow(Math.max(rng(),1e-12), 1/shape); }
+    const d = shape - 1/3; const c = 1/Math.sqrt(9*d);
+    while (true) {
+      let x,v;
+      do { x = sampleNormal(rng,0,1); v = 1+c*x; } while (v<=0);
+      v = v*v*v; const u = rng();
+      if (u < 1 - 0.0331*x*x*x*x) return d*v;
+      if (Math.log(Math.max(u,1e-12)) < 0.5*x*x + d*(1-v+Math.log(v))) return d*v;
+    }
+  }
+  function sampleBeta(rng, alpha, betaP){
+    const x = sampleGamma(rng,alpha); const y = sampleGamma(rng,betaP);
+    return x/(x+y);
+  }
+  function sampleLomax(rng, scale, shape){
+    const u = rng();
+    return scale * (Math.pow(1-u, -1/shape) - 1);
+  }
+  window.makeRng = makeRng;
+  window.sampleNormal = sampleNormal; window.sampleUniform = sampleUniform;
+  window.sampleBeta = sampleBeta; window.sampleLomax = sampleLomax;
+
+  // ==== Strategies ====
+  const STRATEGIES = {
+    stable: { id:'stable', labelJa:'安定志向', labelEn:'STABLE', emoji:'🛡', tagline:'期待値の周りに静かに寄り添う。大きな勝ちも負けもない。', distribution:'Normal(μ=E, σ=E·0.08·s)', accent:'cyan' },
+    gambler: { id:'gambler', labelJa:'ギャンブラー', labelEn:'GAMBLER', emoji:'♠', tagline:'高額か激安か。中間などない、ゼロサムの二極化。', distribution:'Beta(0.5, 0.5) · 2E', accent:'red' },
+    risktaker: { id:'risktaker', labelJa:'リスクテイカー', labelEn:'RISK TAKER', emoji:'⚡', tagline:'分散を大きく取る。勝ち負けの振れ幅で心拍を上げにいく。', distribution:'Normal(μ=E, σ=E·0.35·s)', accent:'purple' },
+    fortune: { id:'fortune', labelJa:'運任せ', labelEn:'FORTUNE', emoji:'🎲', tagline:'0円から2倍まで、どこに落ちるかはサイコロ次第。', distribution:'Uniform(0, 2E)', accent:'gold' },
+    jackpot: { id:'jackpot', labelJa:'一発逆転', labelEn:'JACKPOT', emoji:'💥', tagline:'ほぼ無料。だが極稀に、全員分を背負う。', distribution:'Heavy-tail (Lomax)', accent:'magenta' },
+  };
+  const STRATEGY_ORDER = ['stable','gambler','risktaker','fortune','jackpot'];
+  function sampleAmount(strategy, expected, rng, spread=1){
+    const E = Math.max(1, expected); let v = E;
+    switch (strategy) {
+      case 'stable': v = window.sampleNormal(rng, E, E*0.08*spread); break;
+      case 'gambler': {
+        const a = 0.5/Math.max(0.2,spread); const b = 0.5/Math.max(0.2,spread);
+        const x = window.sampleBeta(rng,a,b); v = x*2*E; break;
+      }
+      case 'risktaker': v = window.sampleNormal(rng, E, E*0.35*spread); break;
+      case 'fortune': {
+        const lo = E*(1-spread); const hi = E*(1+spread);
+        v = window.sampleUniform(rng, Math.max(0,lo), hi);
+        if (spread>=1) v = window.sampleUniform(rng, 0, 2*E);
+        break;
+      }
+      case 'jackpot': {
+        const shape = Math.max(1.3, 2.2/Math.max(0.5,spread));
+        const scale = E*(shape-1)/shape;
+        v = window.sampleLomax(rng, scale, shape); break;
+      }
+      default: v = E;
+    }
+    v = Math.max(0, Math.min(v, E*4));
+    return Math.round(v);
+  }
+  function normalPdf(x,mu,sigma){ const z=(x-mu)/sigma; return Math.exp(-0.5*z*z)/(sigma*Math.sqrt(2*Math.PI)); }
+  function betaPdf(x01,a,b){ if (x01<=0||x01>=1) return 0; return Math.pow(x01,a-1)*Math.pow(1-x01,b-1); }
+  function lomaxPdf(x,scale,shape){ if (x<0) return 0; return (shape/scale)*Math.pow(1+x/scale, -(shape+1)); }
+  function pdfAt(strategy, x, E, spread){
+    switch (strategy) {
+      case 'stable': return normalPdf(x,E,E*0.08*spread);
+      case 'risktaker': return normalPdf(x,E,E*0.35*spread);
+      case 'fortune': return (x>=0 && x<=2*E) ? 1 : 0;
+      case 'gambler': { const a=0.5/Math.max(0.2,spread); const b=0.5/Math.max(0.2,spread); return betaPdf(x/(2*E),a,b); }
+      case 'jackpot': { const shape=Math.max(1.3, 2.2/Math.max(0.5,spread)); const scale=(E*(shape-1))/shape; return lomaxPdf(x,scale,shape); }
+      default: return 0;
+    }
+  }
+  function pdfCurve(strategy, expected, spread=1, N=120){
+    const E = Math.max(1, expected); const hi = E*2;
+    const xs = []; for (let i=0;i<N;i++) xs.push((i/(N-1))*hi);
+    const ys = xs.map(x => pdfAt(strategy, x, E, spread));
+    const ymax = Math.max(...ys, 1e-9);
+    return xs.map((x,i)=>({x, y: ys[i]/ymax}));
+  }
+  function reactionTier(amount, expected){
+    const r = amount/Math.max(1,expected);
+    if (r<=0.25) return 'miracle';
+    if (r<=0.7)  return 'blessed';
+    if (r<=1.25) return 'neutral';
+    if (r<=1.8)  return 'pain';
+    return 'doom';
+  }
+  const TIER_META = {
+    miracle: { label:'奇跡', subtitle:'ほぼタダ。神に愛されし者。', vibe:'celebrate', hue:145 },
+    blessed: { label:'勝利', subtitle:'今夜はあなたが主役です。', vibe:'celebrate', hue:180 },
+    neutral: { label:'相場', subtitle:'可もなく不可もなく、粛々と。', vibe:'calm', hue:85 },
+    pain:    { label:'痛打', subtitle:'ちょっと重い。次回に期待。', vibe:'gloom', hue:30 },
+    doom:    { label:'哀愁', subtitle:'あなたの献身で会は成り立ちました。', vibe:'gloom', hue:10 },
+  };
+  window.STRATEGIES = STRATEGIES;
+  window.STRATEGY_ORDER = STRATEGY_ORDER;
+  window.sampleAmount = sampleAmount;
+  window.pdfCurve = pdfCurve;
+  window.reactionTier = reactionTier;
+  window.TIER_META = TIER_META;
+  </script>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Components (all inlined as a single Babel block so order is deterministic
+       and we don't depend on external file serving) -->
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useCallback, useRef } = React;
+
+    // ========== PdfChart ==========
+    function PdfChart({ curve, accent = 'var(--gold)', height = 80 }) {
+      const { path, area, marks } = useMemo(() => {
+        if (!curve || !curve.length) return { path: '', area: '', marks: [] };
+        const W = 1000, H = height;
+        const xmax = curve[curve.length - 1].x;
+        const xs = curve.map((p) => (p.x / xmax) * W);
+        const ys = curve.map((p) => H - p.y * (H - 4) - 2);
+        let p = `M ${xs[0].toFixed(1)} ${ys[0].toFixed(1)}`;
+        for (let i = 1; i < curve.length; i++) p += ` L ${xs[i].toFixed(1)} ${ys[i].toFixed(1)}`;
+        const a = p + ` L ${W} ${H} L 0 ${H} Z`;
+        const marks = [0.25, 0.5, 0.75, 1].map((f) => f * W);
+        return { path: p, area: a, marks };
+      }, [curve, height]);
+      return (
+        <svg viewBox={`0 0 1000 ${height}`} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="pdf-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={accent} stopOpacity="0.6" />
+              <stop offset="100%" stopColor={accent} stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          {marks.map((mx, i) => (
+            <line key={i} x1={mx} x2={mx} y1="0" y2={height}
+              stroke="oklch(0.82 0.14 85 / 0.14)" strokeDasharray="2 4" />
+          ))}
+          <line x1="500" x2="500" y1="0" y2={height}
+            stroke="oklch(0.82 0.14 85 / 0.55)" strokeDasharray="3 3" />
+          <path d={area} fill="url(#pdf-fill)" />
+          <path d={path} fill="none" stroke={accent} strokeWidth="1.6" />
+        </svg>
+      );
+    }
+
+    // ========== Odometer ==========
+    // Distribution-aware spin. Each strategy has a tailored "suspense curve"
+    // that samples the displayed value over time, all landing exactly on
+    // `value` at t=1.
+    function formatAmount(n) { return Math.round(n).toLocaleString('en-US'); }
+    function Odometer({ value, spinning, spinDuration = 2600, strategy = 'stable', expected = 5000, displayValue = null }) {
+      const [display, setDisplay] = useState(spinning ? 0 : value);
+      const [shake, setShake] = useState(0);
+      // If displayValue is driven externally (Plinko), just mirror it and skip the internal RAF
+      const external = displayValue !== null;
+      useEffect(() => {
+        if (!spinning) { setDisplay(value); setShake(0); return; }
+        if (external) { setShake(0); return; }
+        let raf; const t0 = performance.now();
+        const E = Math.max(1, expected);
+        const loop = () => {
+          const dt = Math.min(1, (performance.now() - t0) / spinDuration);
+          if (dt >= 1) { setDisplay(value); setShake(0); return; }
+
+          let shown = value; let shk = 0;
+          switch (strategy) {
+            case 'stable': {
+              // Gentle sinusoidal wobble, tight amplitude, quick settle
+              const vol = Math.pow(1 - dt, 2);
+              const wobble = Math.sin(dt * 14) * E * 0.08 * vol;
+              const jitter = (Math.random() - 0.5) * E * 0.02 * vol;
+              shown = Math.round(value + (value - value) * 0 + wobble + jitter - (1 - dt) * (value - E) * vol * 0.3);
+              shk = 0.5 * vol;
+              break;
+            }
+            case 'gambler': {
+              // Coin-flip between near-0 and near-2E; flips slow down over time
+              const flipsPerSec = Math.max(1, 14 * (1 - dt));
+              const tick = Math.floor(dt * spinDuration / 1000 * flipsPerSec);
+              const heads = tick % 2 === 0;
+              const hi = 2 * E * (0.85 + Math.random() * 0.15);
+              const lo = E * Math.random() * 0.15;
+              const ext = heads ? hi : lo;
+              const lock = 1 - Math.pow(1 - dt, 2);
+              shown = Math.round(ext * (1 - lock) + value * lock);
+              shk = 3 * (1 - dt);
+              break;
+            }
+            case 'risktaker': {
+              // Big wild flicker across full range + heavy shake
+              const vol = Math.pow(1 - dt, 1.4);
+              const digits = Math.max(3, value.toString().length);
+              const rand = Math.floor(Math.random() * Math.pow(10, Math.min(6, digits)));
+              shown = Math.round(rand * vol + value * (1 - vol));
+              shk = 8 * vol;
+              break;
+            }
+            case 'fortune': {
+              // Slot-machine: 3 independent reels. Each reel locks at a different time.
+              const str = value.toString();
+              const n = str.length;
+              const third = n / 3;
+              let out = '';
+              for (let i = 0; i < n; i++) {
+                // Left digit locks at 0.55, middle at 0.75, right at 0.95
+                const reelIdx = i < third ? 0 : i < third * 2 ? 1 : 2;
+                const lockAt = [0.55, 0.78, 0.95][reelIdx];
+                if (dt >= lockAt) out += str[i];
+                else out += Math.floor(Math.random() * 10);
+              }
+              shown = parseInt(out, 10);
+              shk = 1.5;
+              break;
+            }
+            case 'jackpot': {
+              // Suspense: long low tease near 0, then late surge to final.
+              // If the final value is huge (tail hit), there's a dramatic late jump.
+              const big = value > E * 1.5;
+              let curve;
+              if (big) {
+                // Stay near 0 until 0.75, then explosive rise
+                if (dt < 0.75) curve = dt / 0.75 * 0.05;
+                else curve = 0.05 + Math.pow((dt - 0.75) / 0.25, 0.6) * 0.95;
+              } else {
+                // Ease toward value with tiny upward tease bumps
+                curve = Math.pow(dt, 1.8);
+                if (dt > 0.3 && dt < 0.5) curve += Math.sin(dt * 40) * 0.05 * (1 - dt);
+              }
+              const flicker = (Math.random() - 0.5) * E * 0.1 * (1 - dt);
+              shown = Math.max(0, Math.round(value * curve + flicker));
+              shk = big && dt > 0.75 ? 12 * (dt - 0.75) / 0.25 : 1 * (1 - dt);
+              break;
+            }
+            default: {
+              const vol = Math.pow(1 - dt, 1.6);
+              const digits = Math.max(3, value.toString().length);
+              const rand = Math.floor(Math.random() * Math.pow(10, Math.min(6, digits)));
+              shown = Math.round(rand * vol + value * (1 - vol));
+              shk = 1 * vol;
+            }
+          }
+
+          setDisplay(Math.max(0, shown));
+          setShake(shk);
+          raf = requestAnimationFrame(loop);
+        };
+        raf = requestAnimationFrame(loop);
+        return () => { if (raf) cancelAnimationFrame(raf); };
+      }, [spinning, value, spinDuration, strategy, expected]);
+      const shown = external ? Math.max(0, Math.round(displayValue)) : display;
+      const chars = formatAmount(shown).split('');
+      const sx = shake ? (Math.random() - 0.5) * shake : 0;
+      const sy = shake ? (Math.random() - 0.5) * shake : 0;
+      const rot = shake ? (Math.random() - 0.5) * Math.min(1.2, shake * 0.2) : 0;
+      return (
+        <span className="amount-display" style={{ transform: `translate(${sx}px, ${sy}px) rotate(${rot}deg)` }}>
+          <span className="y">¥</span>
+          {chars.map((c, i) => c === ',' ? <span key={i} className="comma">,</span> : <span key={i}>{c}</span>)}
+        </span>
+      );
+    }
+
+    // ========== Plinko board (distribution-as-physics) ==========
+    // The amount is pre-sampled deterministically; we pick the bin closest to
+    // that amount and synthesize a plausible ball path that ends in that bin.
+    // Each strategy has its own board geometry (peg layout, restitution,
+    // splitter walls) so the resulting ball motion mirrors the distribution.
+    const PLINKO = {
+      W: 460, H: 560, rows: 10, cols: 11, pegR: 4.5, ballR: 8,
+      topPad: 42, botPad: 72, sidePad: 30,
+    };
+    function pegLayout(strategy) {
+      const { rows, cols, topPad, sidePad, H, botPad, W } = PLINKO;
+      const fieldH = H - topPad - botPad;
+      const dy = fieldH / rows;
+      const dx = (W - sidePad * 2) / (cols - 1);
+      const pegs = [];
+      for (let r = 0; r < rows; r++) {
+        const offset = (r % 2) * (dx / 2);
+        const colsThisRow = r % 2 === 0 ? cols : cols - 1;
+        for (let c = 0; c < colsThisRow; c++) {
+          const x = sidePad + c * dx + offset;
+          const y = topPad + (r + 0.5) * dy;
+          if (strategy === 'fortune') continue; // no pegs
+          if (strategy === 'risktaker' && (r + c) % 3 === 0) continue; // sparse
+          pegs.push({ x, y, r: PLINKO.pegR });
+        }
+      }
+      return pegs;
+    }
+    function binsForStrategy(strategy, expected) {
+      const N = 11;
+      const max = expected * 2;
+      const edges = [];
+      for (let i = 0; i <= N; i++) edges.push((i / N) * max);
+      // all strategies share the same bins (amount buckets); distribution
+      // is expressed via peg geometry, not bin widths.
+      return { edges, centers: edges.slice(0, N).map((_, i) => (edges[i] + edges[i + 1]) / 2) };
+    }
+    function pickBin(amount, bins) {
+      const { edges } = bins;
+      for (let i = 0; i < edges.length - 1; i++) {
+        if (amount < edges[i + 1]) return i;
+      }
+      return edges.length - 2;
+    }
+    // Simulate a ball bouncing through pegs, biased so it ends near `targetCol`.
+    // Returns an array of {x, y} samples at ~60fps for animation.
+    function simulatePath(strategy, targetBin, seed, totalMs = 2400) {
+      const { W, H, rows, cols, sidePad, topPad, botPad, ballR, pegR } = PLINKO;
+      const fieldH = H - topPad - botPad;
+      const dy = fieldH / rows;
+      const dx = (W - sidePad * 2) / (cols - 1);
+      // stepped RNG for determinism
+      let s = seed;
+      const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 0xffffffff; };
+
+      // Build L/R sequence of length `rows` that lands at targetCol (approx).
+      // Net rightward shifts = targetCol - (cols-1)/2 (in half-step units).
+      // For each row, decision ∈ {-1, +1} (half-step). Sum should equal 2*(targetCol - cols/2... ).
+      const startCol = (cols - 1) / 2;
+      const netShift = Math.round((targetBin - (cols - 1) / 2) * 2); // in half-dx units
+      const bias = netShift / rows; // per-row average
+      let cumulative = 0;
+      const decisions = [];
+      for (let r = 0; r < rows; r++) {
+        const remaining = rows - r;
+        const need = netShift - cumulative;
+        // Adjust probability so remaining rows can reach the target
+        let p = 0.5 + bias * 0.5;
+        // Strategy-specific modulation
+        if (strategy === 'gambler') {
+          // Hard splitter at top row: first decision is extreme
+          if (r === 0) p = targetBin > (cols - 1) / 2 ? 0.95 : 0.05;
+        }
+        if (strategy === 'stable') p = 0.5 + bias * 0.3; // softer
+        if (strategy === 'risktaker') p = 0.5 + bias * 0.6 + (rnd() - 0.5) * 0.2;
+        if (strategy === 'fortune') p = 0.5 + bias * 0.4; // uniform enough
+        if (strategy === 'jackpot' && targetBin <= 1) {
+          // Tail hit → dramatic early leftward cascade
+          if (r < 3) p = 0.1;
+        }
+        // Clamp
+        p = Math.max(0.05, Math.min(0.95, p));
+        // Force convergence in the last rows
+        if (Math.abs(need) >= remaining) p = need > 0 ? 0.99 : 0.01;
+        const d = rnd() < p ? +1 : -1;
+        decisions.push(d);
+        cumulative += d;
+      }
+
+      // Now turn decisions into continuous path points.
+      // Each row: enter at (currentX, rowTopY), exit at (currentX ± dx/2, rowBottomY).
+      // Use a parabolic arc through each row (peg bounce).
+      const startX = sidePad + startCol * dx;
+      const points = [];
+      let x = startX;
+      // Pre-entry: drop from top into first row
+      const preSteps = 8;
+      for (let i = 0; i <= preSteps; i++) {
+        const t = i / preSteps;
+        points.push({ x: x + (rnd() - 0.5) * 1.5, y: topPad * t });
+      }
+
+      const stepsPerRow = 10;
+      for (let r = 0; r < rows; r++) {
+        const rowY = topPad + r * dy;
+        const nextY = topPad + (r + 1) * dy;
+        const exitX = x + decisions[r] * dx / 2;
+        for (let i = 1; i <= stepsPerRow; i++) {
+          const t = i / stepsPerRow;
+          // parabolic-ish transition with peg contact wobble
+          const ease = t * t * (3 - 2 * t);
+          const px = x + (exitX - x) * ease;
+          const py = rowY + (nextY - rowY) * t;
+          // small perturbation for realism; bigger for risktaker
+          const jitter = strategy === 'risktaker' ? 4 : strategy === 'stable' ? 0.5 : 1.5;
+          const wobble = Math.sin(t * Math.PI) * (rnd() - 0.5) * jitter;
+          points.push({ x: px + wobble, y: py });
+        }
+        x = exitX;
+      }
+
+      // Post: fall into bin
+      const finalBinCenter = sidePad + (cols - 1) * dx * (targetBin / (cols - 1));
+      const binX = finalBinCenter;
+      const floorY = H - botPad + 16;
+      const tailSteps = 12;
+      for (let i = 1; i <= tailSteps; i++) {
+        const t = i / tailSteps;
+        const py = H - botPad + (floorY - (H - botPad)) * t;
+        const easedX = x + (binX - x) * (1 - Math.pow(1 - t, 2));
+        points.push({ x: easedX, y: py });
+      }
+      return { points, landingBin: targetBin };
+    }
+
+    function Plinko({ strategy, amount, expected, spinning, speed = 1, onLanded, onProgress }) {
+      const { W, H } = PLINKO;
+      const pegs = useMemo(() => pegLayout(strategy), [strategy]);
+      const bins = useMemo(() => binsForStrategy(strategy, expected), [strategy, expected]);
+      const targetBin = useMemo(() => pickBin(amount, bins), [amount, bins]);
+      const seed = useMemo(() => {
+        let h = 0; const s = `${strategy}|${amount}|${expected}`;
+        for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+        return h || 1;
+      }, [strategy, amount, expected]);
+      const { points } = useMemo(() => simulatePath(strategy, targetBin, seed), [strategy, targetBin, seed]);
+
+      const [frame, setFrame] = useState(0);
+      const [landed, setLanded] = useState(false);
+      useEffect(() => {
+        setFrame(0); setLanded(false);
+        if (!spinning) return;
+        let raf; const t0 = performance.now();
+        const duration = 2400 / Math.max(0.5, speed);
+        const loop = () => {
+          const dt = (performance.now() - t0) / duration;
+          if (dt >= 1) {
+            setFrame(points.length - 1);
+            setLanded(true);
+            onProgress && onProgress(1);
+            onLanded && onLanded(targetBin);
+            return;
+          }
+          // ease-out for gravity feel (fast near end)
+          const eased = 1 - Math.pow(1 - dt, 1.7);
+          setFrame(Math.floor(eased * (points.length - 1)));
+          onProgress && onProgress(eased);
+          raf = requestAnimationFrame(loop);
+        };
+        raf = requestAnimationFrame(loop);
+        return () => { if (raf) cancelAnimationFrame(raf); };
+      }, [spinning, points, speed, targetBin]);
+
+      const ball = points[Math.min(frame, points.length - 1)] || { x: W / 2, y: 0 };
+      const trail = [];
+      for (let i = Math.max(0, frame - 16); i < frame; i++) {
+        const p = points[i]; if (!p) continue;
+        const age = (frame - i) / 16;
+        trail.push({ ...p, age });
+      }
+
+      // Bin rectangles
+      const { sidePad, topPad, botPad } = PLINKO;
+      const binW = (W - sidePad * 2) / PLINKO.cols;
+      const binY = H - botPad + 10;
+      const binH = botPad - 10 - 6;
+      const finalBin = bins.edges.slice(0, PLINKO.cols).map((_, i) => ({
+        i, x: sidePad + i * binW, y: binY, w: binW, h: binH,
+        center: bins.centers[i] || 0,
+      }));
+
+      // Strategy-specific accents
+      const edgeColor = strategy === 'jackpot' ? 'oklch(0.7 0.25 25)' : 'oklch(0.82 0.14 85)';
+
+      return (
+        <svg className="plinko" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" aria-hidden>
+          <defs>
+            <radialGradient id="ballGrad">
+              <stop offset="0%" stopColor="oklch(0.98 0.02 85)" />
+              <stop offset="60%" stopColor="oklch(0.85 0.14 85)" />
+              <stop offset="100%" stopColor="oklch(0.55 0.15 85)" />
+            </radialGradient>
+            <linearGradient id="binGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="oklch(0.16 0.03 150 / 0.6)" />
+              <stop offset="100%" stopColor="oklch(0.08 0.02 150 / 0.9)" />
+            </linearGradient>
+          </defs>
+
+          {/* Frame */}
+          <rect x="1" y="1" width={W - 2} height={H - 2} rx="14" fill="none" stroke={edgeColor} strokeOpacity="0.35" strokeWidth="1" />
+
+          {/* Gambler: central splitter */}
+          {strategy === 'gambler' && (
+            <polygon points={`${W / 2},${PLINKO.topPad - 6} ${W / 2 - 14},${PLINKO.topPad + 18} ${W / 2 + 14},${PLINKO.topPad + 18}`}
+              fill="oklch(0.65 0.2 25)" stroke="oklch(0.9 0.15 25)" strokeWidth="1" />
+          )}
+          {/* Jackpot: hidden left trap glow */}
+          {strategy === 'jackpot' && (
+            <rect x={PLINKO.sidePad - 4} y={PLINKO.topPad} width="14" height={H - PLINKO.topPad - PLINKO.botPad}
+              fill="oklch(0.7 0.25 25 / 0.12)" stroke="oklch(0.7 0.25 25 / 0.5)" strokeDasharray="3 4" strokeWidth="1" />
+          )}
+          {/* Fortune: tilted floor indication */}
+          {strategy === 'fortune' && (
+            <line x1={PLINKO.sidePad} y1={PLINKO.topPad + 30} x2={W - PLINKO.sidePad} y2={H - PLINKO.botPad - 4}
+              stroke="oklch(0.82 0.14 85 / 0.25)" strokeWidth="1" strokeDasharray="4 6" />
+          )}
+
+          {/* Pegs */}
+          {pegs.map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r={p.r} fill="oklch(0.82 0.14 85)" opacity="0.75" />
+          ))}
+
+          {/* Bins */}
+          {finalBin.map((b) => {
+            const isTarget = landed && b.i === targetBin;
+            const isJackpotBin = strategy === 'jackpot' && b.i === 0;
+            const fill = isTarget ? 'oklch(0.82 0.18 85 / 0.8)' : isJackpotBin ? 'oklch(0.4 0.2 25 / 0.5)' : 'url(#binGrad)';
+            return (
+              <g key={b.i}>
+                <rect x={b.x + 1} y={b.y} width={b.w - 2} height={b.h} rx="3"
+                  fill={fill} stroke={isTarget ? 'oklch(0.95 0.02 85)' : 'oklch(0.4 0.08 150 / 0.6)'} strokeWidth={isTarget ? 2 : 0.8}>
+                  {isTarget && <animate attributeName="opacity" values="1;0.6;1" dur="0.4s" repeatCount="4" />}
+                </rect>
+                <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 4} textAnchor="middle"
+                  fontSize="10" fontFamily="var(--font-mono)" fill={isTarget ? 'oklch(0.15 0.02 150)' : 'oklch(0.65 0.05 85)'}
+                  fontWeight={isTarget ? 700 : 400}>
+                  {b.center >= 1000 ? (b.center / 1000).toFixed(1) + 'k' : Math.round(b.center)}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Expected-value marker */}
+          {(() => {
+            const eIdx = pickBin(expected, bins);
+            const ex = PLINKO.sidePad + (eIdx + 0.5) * binW;
+            return (
+              <g>
+                <line x1={ex} y1={PLINKO.topPad - 10} x2={ex} y2={H - PLINKO.botPad + 8} stroke="oklch(0.82 0.14 85 / 0.25)" strokeWidth="1" strokeDasharray="2 4" />
+                <text x={ex} y={PLINKO.topPad - 14} textAnchor="middle" fontSize="8" fill="oklch(0.82 0.14 85 / 0.7)" fontFamily="var(--font-mono)" letterSpacing="1">期待値</text>
+              </g>
+            );
+          })()}
+
+          {/* Trail */}
+          {trail.map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r={PLINKO.ballR * (1 - p.age * 0.6)}
+              fill="oklch(0.9 0.14 85)" opacity={0.35 * (1 - p.age)} />
+          ))}
+
+          {/* Ball */}
+          {spinning || landed ? (
+            <circle cx={ball.x} cy={ball.y} r={PLINKO.ballR} fill="url(#ballGrad)"
+              style={{ filter: 'drop-shadow(0 0 8px oklch(0.85 0.14 85 / 0.9))' }} />
+          ) : null}
+        </svg>
+      );
+    }
+    // Reusable dartboard SVG
+    function DartboardSvg({ opacity = 1 }) {
+      const sectors = 20;
+      const rings = [95, 85, 62, 38, 15, 6]; // outer→inner radii
+      const ringColors = [
+        ['oklch(0.18 0.02 0)','oklch(0.9 0.02 60)'],   // outer boundary
+        ['oklch(0.55 0.22 145)','oklch(0.45 0.22 25)'], // double
+        ['oklch(0.18 0.02 0)','oklch(0.9 0.02 60)'],   // large single
+        ['oklch(0.55 0.22 145)','oklch(0.45 0.22 25)'], // triple
+        ['oklch(0.18 0.02 0)','oklch(0.9 0.02 60)'],   // small single
+      ];
+      const paths = [];
+      for (let ri = 0; ri < rings.length - 1; ri++) {
+        const ro = rings[ri], ri2 = rings[ri + 1];
+        const colors = ringColors[ri] || ['oklch(0.45 0.22 25)', 'oklch(0.55 0.22 145)'];
+        for (let si = 0; si < sectors; si++) {
+          const a1 = (si / sectors) * Math.PI * 2 - Math.PI / 2;
+          const a2 = ((si + 1) / sectors) * Math.PI * 2 - Math.PI / 2;
+          const x1o = Math.cos(a1)*ro, y1o = Math.sin(a1)*ro;
+          const x2o = Math.cos(a2)*ro, y2o = Math.sin(a2)*ro;
+          const x1i = Math.cos(a1)*ri2, y1i = Math.sin(a1)*ri2;
+          const x2i = Math.cos(a2)*ri2, y2i = Math.sin(a2)*ri2;
+          const d = `M ${x1i} ${y1i} L ${x1o} ${y1o} A ${ro} ${ro} 0 0 1 ${x2o} ${y2o} L ${x2i} ${y2i} A ${ri2} ${ri2} 0 0 0 ${x1i} ${y1i} Z`;
+          paths.push(<path key={`${ri}-${si}`} d={d} fill={colors[si % 2]} stroke="oklch(0.2 0.01 0)" strokeWidth="0.3" />);
+        }
+      }
+      return (
+        <svg viewBox="-100 -100 200 200" style={{ opacity }}>
+          {paths}
+          {/* Outer bull (green) */}
+          <circle r={rings[5]} fill="oklch(0.55 0.22 145)" />
+          {/* Bullseye (red) */}
+          <circle r="3.5" fill="oklch(0.55 0.22 25)" />
+          {/* Wire ring highlight */}
+          <circle r="95" fill="none" stroke="oklch(0.82 0.14 85 / 0.5)" strokeWidth="0.8" />
+          <circle r="62" fill="none" stroke="oklch(0.82 0.14 85 / 0.3)" strokeWidth="0.5" />
+          <circle r="38" fill="none" stroke="oklch(0.82 0.14 85 / 0.3)" strokeWidth="0.5" />
+        </svg>
+      );
+    }
+
+    // Each backdrop is a dart-themed in-stage overlay that only shows while spinning.
+    function SpinBackdrop({ strategy, speed = 1 }) {
+      if (strategy === 'stable') {
+        return (
+          <div className="bg-stable" aria-hidden>
+            <DartboardSvg />
+            <div className="aim-line" />
+          </div>
+        );
+      }
+      if (strategy === 'gambler') {
+        return (
+          <div className="bg-gambler" aria-hidden>
+            <div className="board-spin"><DartboardSvg /></div>
+            <div className="flash" />
+          </div>
+        );
+      }
+      if (strategy === 'risktaker') {
+        return (
+          <div className="bg-risk" aria-hidden>
+            {[0,1,2,3,4,5,6].map(i => <div key={i} className={`traj traj-${i}`} />)}
+          </div>
+        );
+      }
+      if (strategy === 'fortune') {
+        const scores = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
+        return (
+          <div className="bg-fortune" aria-hidden>
+            <div className="board-rot"><DartboardSvg /></div>
+            <div className="score-flash">{scores[Math.floor(Date.now()/600) % scores.length]}</div>
+          </div>
+        );
+      }
+      if (strategy === 'jackpot') {
+        return (
+          <div className="bg-jackpot" aria-hidden>
+            <div className="bull" />
+            <div className="dart-ring" />
+            <div className="dart-ring dart-ring-2" />
+          </div>
+        );
+      }
+      return null;
+    }
+
+    // ===== Roulette wheel =====
+    function RouletteWheel({ strategy, amount, expected, spinning, speed = 1, onProgress, ready = false }) {
+      const N = 24;
+      const spinMs = 7200 / Math.max(0.5, speed); // extra long — slow and dramatic
+
+      // Geometry constants (defined first so everything can reference them)
+      const BEZEL_R   = 132;
+      const TRACK_R   = 116;
+      const BALL_R    = 109;
+      const APRON_R   = 100;
+      const PKT_OUT   = 97;
+      const PKT_IN    = 34;
+      const CONE_R    = 32;
+      const BALL_PKT  = 72;
+
+      // Animation state
+      const rafRef    = useRef(null);
+      const driftRef  = useRef(null); // post-landing slow drift RAF
+      const animDone  = useRef(false); // true once RAF loop reaches dt=1
+      const [wAngle,  setWAngle]  = useState(0);
+      const [ballPos, setBallPos] = useState({ r: BALL_R, ang: -90 });
+      const [phase,   setPhase]   = useState('idle');
+
+      // Sector amounts — deterministic per strategy+expected
+      const sectors = useMemo(() => {
+        const E = Math.max(1, expected);
+        let s = (0x9e3779b9 ^ ((E * 31) >>> 0) ^ (strategy.charCodeAt(0) * 7)) >>> 0;
+        const rnd = () => { s = (Math.imul(s ^ (s >>> 16), 0x45d9f3b) ^ (s >>> 4)) >>> 0; return s / 0xffffffff; };
+        const amts = Array.from({ length: N }, () => {
+          const u = rnd();
+          switch (strategy) {
+            case 'stable':    return Math.max(0, Math.round(E * (0.6 + u * 0.8)));
+            case 'gambler':   return Math.round(rnd() < 0.5 ? E * u * 0.25 : E * (1.5 + u * 0.55));
+            case 'risktaker': return Math.max(0, Math.round(E * (0.05 + u * 1.9)));
+            case 'fortune':   return Math.round(u * E * 2);
+            case 'jackpot':   { const q = rnd(); return Math.round(q < 0.72 ? E * u * 0.3 : q < 0.9 ? E * (0.7 + u) : E * (2.5 + u * 4)); }
+            default:          return Math.round(E * (0.4 + u * 1.2));
+          }
+        });
+        // Snap winning sector to exact amount
+        let ci = 0, cd = Infinity;
+        for (let i = 0; i < N; i++) { const d = Math.abs(amts[i] - amount); if (d < cd) { cd = d; ci = i; } }
+        amts[ci] = amount;
+        // Color: index 0 = green (like 0-pocket), else red/black alternating
+        const COLORS = ['green','red','black','red','black','red','black','red','black','red','black','red','black',
+                        'red','black','red','black','red','black','red','black','red','black','black'];
+        return amts.map((a, i) => ({ amount: a, isTarget: i === ci, idx: i, color: COLORS[i % COLORS.length] }));
+      }, [strategy, expected, amount]);
+
+      const targetIdx   = sectors.findIndex(s => s.isTarget);
+      const degPerSect  = 360 / N;
+
+      // Ball lands at a position that varies per result (not always the top)
+      const LAND_DEG = -180 + ((amount * 137 + strategy.length * 53) % 360);
+      const targetInWheel = targetIdx * degPerSect + degPerSect / 2 - 90;
+      let rawFinalW = LAND_DEG - targetInWheel;
+      rawFinalW = ((rawFinalW % 360) + 360) % 360;
+      if (rawFinalW > 180) rawFinalW -= 360;
+      const revs  = 4; // wheel — 4 clockwise revolutions (opposite to ball)
+      // Make wheel go clockwise (positive): rawFinalW must be positive
+      const clockwiseFinalW = rawFinalW <= 0 ? rawFinalW + 360 : rawFinalW;
+      const totalW = clockwiseFinalW + revs * 360; // always positive = clockwise
+      const finalW = clockwiseFinalW;
+
+      // Ball trajectory — stays on track until 85%, then dramatic drop
+      // 11 revolutions at k=1.8: very gradual deceleration, unpredictable until late
+      const BALL_START_ANG  = LAND_DEG + 240;
+      const angularGap      = ((BALL_START_ANG - LAND_DEG) % 360 + 360) % 360 || 360;
+      const totalBallTravel = 4 * 360 + angularGap; // 4 revolutions — slow and trackable
+      const getBallState = (dt) => {
+        const k    = 0.85; // very gentle decay — maximum human-readable speed
+        const ease = (1 - Math.exp(-k * dt)) / (1 - Math.exp(-k));
+        const ang  = BALL_START_ANG - totalBallTravel * ease;
+        let r;
+        if (dt <= 0.78) {
+          r = BALL_R; // on outer track
+        } else if (dt <= 0.92) {
+          // Slow spiral inward — still visibly rolling, decelerating
+          const p  = (dt - 0.78) / 0.14;
+          const ep = 3*p*p - 2*p*p*p; // smooth-step
+          r = BALL_R + (BALL_PKT + 14 - BALL_R) * ep;
+        } else {
+          // Final settle + gentle bounce
+          const p    = (dt - 0.92) / 0.08;
+          const base   = BALL_PKT + 14 - 14 * (3*p*p - 2*p*p*p);
+          const bounce = Math.sin(p * Math.PI * 2.8) * Math.pow(1 - p, 2) * 6;
+          r = base + bounce;
+        }
+        return { ang, r };
+      };
+
+      useEffect(() => {
+        if (!spinning) {
+          // If animation already ran to completion, do nothing (result is already shown)
+          if (animDone.current) return;
+          // Cold load from URL — set final position immediately
+          setWAngle(finalW);
+          setBallPos(getBallState(1));
+          setPhase('landed');
+          onProgress && onProgress(1);
+          return;
+        }
+        // New spin starting
+        animDone.current = false;
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        if (driftRef.current) { cancelAnimationFrame(driftRef.current); driftRef.current = null; }
+        setPhase('spinning');
+        onProgress && onProgress(0);
+        const t0 = performance.now();
+        const tick = (now) => {
+          const dt = Math.min(1, (now - t0) / spinMs);
+          // Wheel: stops by dt=0.85, holds still while ball settles (0.85→1.0)
+          // Wheel: near-linear deceleration over full duration (never stops during spin)
+          setWAngle(totalW * (1 - Math.pow(1 - dt, 1.8)));
+          setBallPos(getBallState(dt));
+          onProgress && onProgress(Math.min(0.97, dt * 1.03));
+          if (dt < 1) {
+            rafRef.current = requestAnimationFrame(tick);
+          } else {
+            animDone.current = true;
+            setBallPos(getBallState(1));
+            setPhase('landed');
+            onProgress && onProgress(1);
+            // Start post-landing slow drift
+            let driftAngle = finalW;
+            const DRIFT_SPEED = 12; // deg/sec — slow lazy rotation
+            let prevNow = performance.now();
+            const drift = (now) => {
+              const dtSec = (now - prevNow) / 1000;
+              prevNow = now;
+              driftAngle += DRIFT_SPEED * dtSec;
+              setWAngle(driftAngle);
+              driftRef.current = requestAnimationFrame(drift);
+            };
+            driftRef.current = requestAnimationFrame(drift);
+          }
+        };
+        rafRef.current = requestAnimationFrame(tick);
+        // Do NOT cancel RAF on cleanup — let it run to natural completion
+      }, [spinning, spinMs, finalW, totalW]);
+
+      // Amount-based color: green (cheap) → gold (fair) → orange → red (expensive)
+      const amountColor = (amt) => {
+        const r = amt / Math.max(1, expected);
+        if (r < 0.25) return { fill: 'oklch(0.46 0.24 148)', text: 'oklch(0.95 0.04 148)' }; // deep green
+        if (r < 0.6)  return { fill: 'oklch(0.50 0.2 145)',  text: 'oklch(0.95 0.03 145)' }; // green
+        if (r < 0.85) return { fill: 'oklch(0.52 0.18 115)', text: 'oklch(0.95 0.03 115)' }; // yellow-green
+        if (r < 1.15) return { fill: 'oklch(0.52 0.16 85)',  text: 'oklch(0.12 0.02 85)'  }; // gold (near expected)
+        if (r < 1.5)  return { fill: 'oklch(0.52 0.2 48)',   text: 'oklch(0.95 0.03 48)'  }; // orange
+        if (r < 2.0)  return { fill: 'oklch(0.46 0.24 25)',  text: 'oklch(0.95 0.02 25)'  }; // red
+        return                { fill: 'oklch(0.35 0.26 15)', text: 'oklch(0.95 0.02 15)'  }; // deep red
+      };
+
+      // Render one sector with risk coloring + warning icon
+      const renderSector = ({ amount: amt, isTarget, idx: i }) => {
+        const a1r = (i / N * 360 - 90) * Math.PI / 180;
+        const a2r = ((i + 1) / N * 360 - 90) * Math.PI / 180;
+        const x1o = Math.cos(a1r)*PKT_OUT, y1o = Math.sin(a1r)*PKT_OUT;
+        const x2o = Math.cos(a2r)*PKT_OUT, y2o = Math.sin(a2r)*PKT_OUT;
+        const x1i = Math.cos(a1r)*PKT_IN,  y1i = Math.sin(a1r)*PKT_IN;
+        const x2i = Math.cos(a2r)*PKT_IN,  y2i = Math.sin(a2r)*PKT_IN;
+        const d = `M${x1i},${y1i}L${x1o},${y1o}A${PKT_OUT},${PKT_OUT},0,0,1,${x2o},${y2o}L${x2i},${y2i}A${PKT_IN},${PKT_IN},0,0,0,${x1i},${y1i}Z`;
+        const { fill: baseFill, text: baseText } = amountColor(amt);
+        const fill     = baseFill;  // never change fill on landing — color = risk only
+        const textFill = baseText;
+        const midAng = ((i + 0.5) / N * 360 - 90) * Math.PI / 180;
+        const tR = (PKT_OUT + PKT_IN) / 2;
+        const tx = Math.cos(midAng)*tR, ty = Math.sin(midAng)*tR;
+        const rot = (i + 0.5) / N * 360;
+        const ratio = amt / Math.max(1, expected);
+        const amtStr = (ready || phase === 'spinning')
+          ? '？'
+          : amt >= 10000 ? `¥${(amt/1000).toFixed(0)}k`
+          : amt >= 1000  ? `¥${(amt/1000).toFixed(1)}k`
+          : `¥${amt}`;
+        // Emoji icon — only shown after landing
+        const icon = (ready || phase === 'spinning') ? null :
+          ratio >= 2.0 ? '💀' :
+          ratio >= 1.5 ? '😱' :
+          ratio >= 1.15 ? '😰' :
+          ratio < 0.25  ? '👼' :
+          ratio < 0.6   ? '🍀' : null;
+        const chars = amtStr.split('');
+        const charH = 7.5;
+        const allChars = icon ? [icon, ...chars] : chars;
+        const allH = allChars.length * charH;
+        const allStartY = ty - allH / 2 + charH * 0.6;
+        // Landing highlight: outline only, keep fill color
+        const isLanded = isTarget && phase !== 'spinning';
+        return (
+          <g key={i}>
+            <path d={d} fill={fill} />
+            {/* Landing highlight outline — no color change */}
+            {isLanded && (
+              <path d={d} fill="none"
+                stroke="oklch(0.95 0.08 85)" strokeWidth="2"
+                style={{ filter:'drop-shadow(0 0 4px oklch(0.82 0.14 85 / 0.9))' }} />
+            )}
+            <line x1={x1i} y1={y1i} x2={x1o} y2={y1o} stroke="oklch(0.08 0.01 0 / 0.6)" strokeWidth="0.8" />
+            {allChars.map((ch, ci) => (
+              <text key={ci}
+                x={tx} y={allStartY + ci * charH}
+                textAnchor="middle" dominantBaseline="middle"
+                transform={'rotate('+(rot)+','+tx+','+ty+')'}
+                fontSize={ci === 0 && icon ? "8" : "7.5"}
+                fontFamily="'JetBrains Mono', monospace"
+                fill={textFill}
+                fontWeight={isLanded ? '700' : '600'}>
+                {ch}
+              </text>
+            ))}
+          </g>
+        );
+      };
+
+      // Ball cartesian position (absolute, used while spinning)
+      const bx = Math.cos(ballPos.ang * Math.PI / 180) * ballPos.r;
+      const by = Math.sin(ballPos.ang * Math.PI / 180) * ballPos.r;
+      // Ball wheel-local position (used after landing — stays in pocket as wheel turns)
+      const landedLocalAng = (LAND_DEG - finalW) * Math.PI / 180;
+      const landedLx = Math.cos(landedLocalAng) * BALL_PKT;
+      const landedLy = Math.sin(landedLocalAng) * BALL_PKT;
+
+      return (
+        <div style={{ position:'relative', width:'100%', maxWidth:380, margin:'0 auto' }}>
+          <svg viewBox="-140 -140 280 280" style={{ width:'100%', height:'auto', display:'block' }}>
+            <defs>
+              <radialGradient id="rlt-bezel" cx="40%" cy="30%">
+                <stop offset="0%" stopColor="oklch(0.32 0.07 58)" />
+                <stop offset="60%" stopColor="oklch(0.2 0.05 55)" />
+                <stop offset="100%" stopColor="oklch(0.12 0.03 55)" />
+              </radialGradient>
+              <radialGradient id="rlt-track">
+                <stop offset="78%" stopColor="oklch(0.18 0.03 200)" />
+                <stop offset="100%" stopColor="oklch(0.3 0.04 200)" />
+              </radialGradient>
+              <radialGradient id="rlt-ball" cx="33%" cy="28%">
+                <stop offset="0%" stopColor="oklch(1 0 0)" />
+                <stop offset="45%" stopColor="oklch(0.9 0.01 85)" />
+                <stop offset="100%" stopColor="oklch(0.55 0.02 85)" />
+              </radialGradient>
+              <radialGradient id="rlt-cone">
+                <stop offset="0%" stopColor="oklch(0.86 0.14 85)" />
+                <stop offset="70%" stopColor="oklch(0.56 0.1 80)" />
+                <stop offset="100%" stopColor="oklch(0.38 0.08 78)" />
+              </radialGradient>
+              <filter id="rlt-ball-glow">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            {/* ── Outer mahogany bezel ── */}
+            <circle r={BEZEL_R} fill="url(#rlt-bezel)" />
+            {/* Gold inlay rings */}
+            <circle r={BEZEL_R - 5}  fill="none" stroke="oklch(0.82 0.14 85 / 0.65)" strokeWidth="1.2" />
+            <circle r={BEZEL_R - 9}  fill="none" stroke="oklch(0.82 0.14 85 / 0.25)" strokeWidth="0.5" />
+            <circle r={BEZEL_R - 13} fill="none" stroke="oklch(0.82 0.14 85 / 0.18)" strokeWidth="0.4" />
+
+            {/* Sector number dots on bezel */}
+            {Array.from({length: N}, (_, i) => {
+              const a = (i / N * 360 - 90) * Math.PI / 180;
+              return <circle key={i} cx={Math.cos(a)*(BEZEL_R-3)} cy={Math.sin(a)*(BEZEL_R-3)} r="1.6" fill="oklch(0.82 0.14 85 / 0.55)" />;
+            })}
+
+            {/* ── Ball track (fixed, does not rotate) ── */}
+            <circle r={TRACK_R} fill="url(#rlt-track)" stroke="oklch(0.82 0.14 85 / 0.45)" strokeWidth="1" />
+            <circle r={APRON_R} fill="oklch(0.08 0.02 150)" stroke="oklch(0.82 0.14 85 / 0.4)" strokeWidth="0.9" />
+
+            {/* ── Diamond deflectors (fixed, 8×) ── */}
+            {Array.from({length: 8}, (_, i) => {
+              const a = (i / 8 * 360 - 90) * Math.PI / 180;
+              const cx = Math.cos(a) * 107, cy = Math.sin(a) * 107;
+              return (
+                <g key={i} transform={`translate(${cx},${cy}) rotate(${i/8*360-90})`}>
+                  <rect x="-4.5" y="-4.5" width="9" height="9" rx="1.2"
+                    fill="oklch(0.78 0.12 85)" stroke="oklch(0.5 0.09 78)" strokeWidth="0.6"
+                    transform="rotate(45)" />
+                  <circle r="1.2" fill="oklch(0.35 0.05 150)" />
+                </g>
+              );
+            })}
+
+            {/* ── Spinning wheel ── */}
+            <g transform={`rotate(${wAngle})`}>
+              {/* Base disk */}
+              <circle r={PKT_OUT} fill="oklch(0.07 0.015 150)" />
+
+              {/* Sectors */}
+              {sectors.map(s => renderSector(s))}
+
+              {/* Outer pocket ring */}
+              <circle r={PKT_OUT} fill="none" stroke="oklch(0.7 0.07 85 / 0.7)" strokeWidth="1.5" />
+
+              {/* Center cone */}
+              <circle r={CONE_R} fill="url(#rlt-cone)" />
+              {/* Cone ring details */}
+              {[CONE_R - 4, CONE_R - 10, CONE_R - 18].map((r, i) => (
+                <circle key={i} r={r} fill="none" stroke="oklch(0.5 0.09 78 / 0.6)" strokeWidth="0.6" />
+              ))}
+
+              {/* Hub */}
+              <circle r="10" fill="oklch(0.12 0.03 150)" stroke="oklch(0.82 0.14 85 / 0.7)" strokeWidth="1.4" />
+              <circle r="4"  fill="oklch(0.82 0.14 85)" />
+              <circle r="1.6" fill="oklch(0.15 0.02 150)" />
+
+              {/* ── Ball (landed — wheel-local coords, rotates with wheel) ── */}
+              {phase === 'landed' && !ready && (
+                <>
+                  <circle cx={landedLx} cy={landedLy} r="18"
+                    fill="oklch(0.82 0.2 85 / 0.38)"
+                    stroke="oklch(0.88 0.18 85)" strokeWidth="0.8"
+                    style={{ animation: 'rlt-glow 0.6s ease-out forwards' }} />
+                  <g filter="url(#rlt-ball-glow)">
+                    <circle cx={landedLx} cy={landedLy} r="7.5" fill="url(#rlt-ball)" />
+                  </g>
+                  <circle cx={landedLx - 2} cy={landedLy - 2.5} r="2.4" fill="oklch(1 0 0 / 0.75)" />
+                </>
+              )}
+            </g>
+
+            {/* ── Ball (spinning — absolute track coords) ── */}
+            {phase !== 'landed' && !ready && (
+              <>
+                <g filter="url(#rlt-ball-glow)">
+                  <circle cx={bx} cy={by} r="7.5" fill="url(#rlt-ball)" />
+                </g>
+                <circle cx={bx - 2.5} cy={by - 2.8} r="2.4" fill="oklch(1 0 0 / 0.75)" style={{ pointerEvents:'none' }} />
+              </>
+            )}
+
+            <style>{`@keyframes rlt-glow { from{opacity:0} 35%{opacity:1} to{opacity:0.85} }`}</style>
+          </svg>
+        </div>
+      );
+    }
+
+      // Generate N sector amounts deterministically from strategy + expected
+    // ===== Dart throw components (kept for reference) =====
+    function DartGlyph({ x = 0, y = 0, rot = 0, scale = 1 }) {
+      return (
+        <g transform={`translate(${x},${y}) rotate(${rot}) scale(${scale})`}>
+          <polygon points="0,-14 1.6,-1 0,-3.5 -1.6,-1" fill="oklch(0.9 0.14 85)" />
+          <rect x="-0.9" y="-1" width="1.8" height="12" fill="oklch(0.62 0.08 85)" />
+          <rect x="-2.4" y="11" width="4.8" height="1.6" fill="oklch(0.48 0.06 85)" />
+          <polygon points="-3.2,12.6 3.2,12.6 4,20 -4,20" fill="oklch(0.54 0.11 85)" />
+          <line x1="0" y1="11" x2="-3.2" y2="12.6" stroke="oklch(0.7 0.1 85)" strokeWidth="0.5" />
+          <line x1="0" y1="11" x2="3.2" y2="12.6" stroke="oklch(0.7 0.1 85)" strokeWidth="0.5" />
+        </g>
+      );
+    }
+
+    function DartThrow({ strategy, amount, expected, spinning, speed = 1, onProgress }) {
+      const spinMs = 2400 / Math.max(0.5, speed);
+      const tier = window.reactionTier(amount, expected);
+      const [dartLanded, setDartLanded] = useState(!spinning);
+      const [key, setKey] = useState(0);
+
+      useEffect(() => {
+        if (!spinning) { setDartLanded(true); onProgress && onProgress(1); return; }
+        setDartLanded(false);
+        setKey(k => k + 1);
+        onProgress && onProgress(0);
+        const t1 = setTimeout(() => onProgress && onProgress(0.45), spinMs * 0.42);
+        const t2 = setTimeout(() => { setDartLanded(true); onProgress && onProgress(1); }, spinMs * 0.88);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+      }, [spinning, spinMs]);
+
+      // Ring radius by tier (SVG units, board r=95)
+      const ringR   = { miracle: 4,  blessed: 16, neutral: 46, pain: 70, doom: 88 };
+      const ringHue = { miracle: 145, blessed: 180, neutral: 85, pain: 30, doom: 15 };
+      const r   = ringR[tier]   || 46;
+      const hue = ringHue[tier] || 85;
+
+      // Angle per strategy (degrees, 0 = right)
+      const stratAngle = { stable: -72, gambler: 144, risktaker: 216, fortune: 54, jackpot: 300 };
+      const angDeg = stratAngle[strategy] || -72;
+      const ang = angDeg * Math.PI / 180;
+      const dx = Math.cos(ang) * r;
+      const dy = Math.sin(ang) * r;
+      const dartRot = angDeg + 90; // tail points outward
+
+      // Dart start (far outside board)
+      const fx = Math.cos(ang) * 190 + (Math.sin(ang)) * 20;
+      const fy = Math.sin(ang) * 190 - (Math.cos(ang)) * 20;
+      const mdx = dx - fx, mdy = dy - fy;
+
+      return (
+        <div style={{ position:'relative', width:'100%', maxWidth:340, margin:'0 auto' }}>
+          <svg viewBox="-120 -120 240 240" style={{ width:'100%', height:'auto', display:'block' }}>
+            <DartboardSvg opacity={1} />
+
+            {/* Spinning — crosshair + flying dart */}
+            {!dartLanded && (
+              <>
+                {/* Target crosshair */}
+                <circle cx={dx} cy={dy} r="9" fill="none" stroke={`oklch(0.82 0.22 ${hue})`} strokeWidth="0.9" strokeDasharray="3 2" opacity="0.8" />
+                <circle cx={dx} cy={dy} r="16" fill="none" stroke={`oklch(0.82 0.22 ${hue} / 0.4)`} strokeWidth="0.5" />
+                <line x1={dx-12} y1={dy} x2={dx+12} y2={dy} stroke={`oklch(0.82 0.22 ${hue})`} strokeWidth="0.7" opacity="0.7" />
+                <line x1={dx} y1={dy-12} x2={dx} y2={dy+12} stroke={`oklch(0.82 0.22 ${hue})`} strokeWidth="0.7" opacity="0.7" />
+                {/* Flying dart */}
+                <g key={key} style={{ animation: `dart-fly-anim-${key} ${(spinMs*0.86).toFixed(0)}ms cubic-bezier(0.32,0,0.08,1) forwards` }}>
+                  <DartGlyph x={fx} y={fy} rot={dartRot} />
+                </g>
+                <style>{`@keyframes dart-fly-anim-${key} { from{transform:translate(0,0)} to{transform:translate(${mdx.toFixed(1)}px,${mdy.toFixed(1)}px)} }`}</style>
+              </>
+            )}
+
+            {/* Landed — dart embedded + glow */}
+            {dartLanded && (
+              <>
+                <circle cx={dx} cy={dy} r="13" fill={`oklch(0.82 0.22 ${hue} / 0.28)`} stroke={`oklch(0.82 0.22 ${hue})`} strokeWidth="0.7" style={{ animation:'dart-glow 0.6s ease-out' }} />
+                <DartGlyph x={dx} y={dy} rot={dartRot} />
+              </>
+            )}
+          </svg>
+          <style>{`@keyframes dart-glow { from{opacity:0} 30%{opacity:1} to{opacity:0.85} }`}</style>
+        </div>
+      );
+    }
+
+    function Burst({ vibe, hue = 85, seed = 0 }) {
+      const pieces = useMemo(() => {
+        const N = vibe === 'celebrate' ? 60 : vibe === 'calm' ? 24 : 10;
+        const rand = (i, s) => { const x = Math.sin((i+1)*9301 + seed*49297 + s) * 233280; return x - Math.floor(x); };
+        return Array.from({ length: N }, (_, i) => {
+          const angle = rand(i,1)*Math.PI*2;
+          const dist = 100 + rand(i,2)*480;
+          const rot = rand(i,3)*360;
+          const delay = rand(i,4)*0.28;
+          const dur = 1.1 + rand(i,5)*1.3;
+          const size = 14 + rand(i,6)*16;
+          const h = hue + (rand(i,8)-0.5)*50;
+          return { i, angle, dist, rot, delay, dur, size, h };
+        });
+      }, [vibe, hue, seed]);
+      if (vibe === 'gloom') return null;
+      return (
+        <div className="burst" aria-hidden>
+          {pieces.map((p) => {
+            const dx = Math.cos(p.angle)*p.dist;
+            const dy = Math.sin(p.angle)*p.dist;
+            return (
+              <div key={p.i} className="piece" style={{
+                '--dx': `${dx}px`, '--dy': `${dy}px`, '--rot': `${p.rot}deg`,
+                animation: `piece-fly ${p.dur}s cubic-bezier(0.15, 0.7, 0.25, 1) ${p.delay}s both`,
+              }}>
+                <svg viewBox="0 0 20 20" width={p.size} height={p.size} style={{ display:'block' }}>
+                  <circle cx="10" cy="10" r="9" fill={`oklch(0.82 0.2 ${p.h})`}
+                    stroke="oklch(1 0 0 / 0.6)" strokeWidth="1.5" strokeDasharray="3 2" />
+                  <circle cx="10" cy="10" r="5.5" fill="none"
+                    stroke={`oklch(0.65 0.18 ${p.h} / 0.7)`} strokeWidth="1" />
+                  <circle cx="10" cy="10" r="2" fill={`oklch(0.65 0.18 ${p.h})`} />
+                </svg>
+              </div>
+            );
+          })}
+          <style>{`
+            @keyframes piece-fly {
+              0% { transform: translate(-50%,-50%) rotate(var(--rot)) scale(0.1); opacity:0; }
+              12% { opacity:1; }
+              100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1); opacity:0; }
+            }
+          `}</style>
+        </div>
+      );
+    }
+    function Rain({ intensity = 1 }) {
+      const drops = useMemo(() => {
+        const N = Math.floor(60 * intensity);
+        return Array.from({ length: N }, (_, i) => {
+          const rand = (s) => { const x = Math.sin(i*9301 + s)*233280; return x - Math.floor(x); };
+          return { i, left: rand(1)*105-2, delay: rand(2)*3, dur: 1.0+rand(3)*0.8, op: 0.35+rand(4)*0.45, sz: 14+rand(5)*12, hue: 15+rand(6)*30 };
+        });
+      }, [intensity]);
+      return (
+        <div className="dart-rain" aria-hidden>
+          {drops.map((d) => (
+            <span key={d.i} className="dart-drop" style={{
+              left: `${d.left}%`,
+              animationDelay: `${d.delay}s`,
+              animationDuration: `${d.dur}s`,
+              opacity: d.op,
+            }}>
+              <svg viewBox="0 0 20 20" width={d.sz} height={d.sz} style={{ display:'block' }}>
+                <circle cx="10" cy="10" r="9" fill={`oklch(0.72 0.18 ${d.hue})`}
+                  stroke="oklch(1 0 0 / 0.4)" strokeWidth="1.5" strokeDasharray="3 2" />
+                <circle cx="10" cy="10" r="4.5" fill="none"
+                  stroke={`oklch(0.55 0.15 ${d.hue} / 0.6)`} strokeWidth="1" />
+              </svg>
+            </span>
+          ))}
+        </div>
+      );
+    }
+
+    // ========== ShareCard ==========
+    function ShareCard({ name, amount, strategy, expected, tierMeta, seedHex }) {
+      const hue = tierMeta.hue;
+      const amountStr = Math.round(amount).toLocaleString('en-US');
+      const expectedStr = '¥' + Math.round(expected).toLocaleString('en-US');
+      const delta = amount - expected;
+      const deltaStr = (delta >= 0 ? '+' : '') + delta.toLocaleString('en-US');
+      return (
+        <svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="bg" cx="50%" cy="40%" r="70%">
+              <stop offset="0%" stopColor={`oklch(0.28 0.08 ${hue})`} />
+              <stop offset="55%" stopColor="oklch(0.16 0.04 150)" />
+              <stop offset="100%" stopColor="oklch(0.08 0.025 150)" />
+            </radialGradient>
+            <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="oklch(0.92 0.14 85)" />
+              <stop offset="100%" stopColor="oklch(0.62 0.12 80)" />
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="8" /><feComposite in="SourceGraphic" operator="over" /></filter>
+            <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="oklch(0.82 0.14 85 / 0.08)" /></pattern>
+          </defs>
+          <rect width="1200" height="630" fill="url(#bg)" />
+          <rect width="1200" height="630" fill="url(#dots)" />
+          <rect x="28" y="28" width="1144" height="574" rx="8" fill="none" stroke="url(#gold)" strokeWidth="1.5" opacity="0.5" />
+          <rect x="38" y="38" width="1124" height="554" rx="6" fill="none" stroke="url(#gold)" strokeWidth="0.5" opacity="0.3" />
+          {[80, 1120].map((x, i) => (
+            <g key={i} transform={`translate(${x}, 315)`}>
+              <circle r="3" fill="url(#gold)" />
+              <circle r="16" fill="none" stroke="url(#gold)" strokeWidth="0.6" opacity="0.5" />
+            </g>
+          ))}
+          <text x="600" y="108" textAnchor="middle" fontFamily="'Playfair Display', serif" fontSize="22" letterSpacing="10" fill="oklch(0.82 0.14 85 / 0.9)">大 人 の ビ ッ く ら ポ ン</text>
+          <line x1="460" y1="130" x2="740" y2="130" stroke="url(#gold)" strokeWidth="0.8" opacity="0.6" />
+          <g transform="translate(600, 176)">
+            <rect x="-150" y="-24" width="300" height="44" rx="22" fill={`oklch(0.82 0.2 ${hue} / 0.12)`} stroke={`oklch(0.82 0.2 ${hue})`} strokeWidth="1" />
+            <text textAnchor="middle" y="8" fontFamily="'Playfair Display', serif" fontSize="20" letterSpacing="6" fill={`oklch(0.9 0.2 ${hue})`}>{tierMeta.label.toUpperCase()} — {strategy.labelEn}</text>
+          </g>
+          <text x="600" y="240" textAnchor="middle" fontFamily="'Playfair Display', serif" fontSize="30" fill="oklch(0.94 0.02 85)">{name}</text>
+          <text x="600" y="262" textAnchor="middle" fontFamily="'JetBrains Mono', monospace" fontSize="12" letterSpacing="6" fill="oklch(0.72 0.03 85)">SETTLEMENT · {strategy.labelJa}</text>
+          <g filter="url(#glow)">
+            <text x="600" y="400" textAnchor="middle" fontFamily="'Playfair Display', serif" fontSize="140" fontWeight="500" fill="oklch(0.96 0.02 85)">
+              <tspan fill="url(#gold)" fontSize="72" dy="-38">¥</tspan>
+              <tspan dy="38">{amountStr}</tspan>
+            </text>
+          </g>
+          <g transform="translate(0, 500)" fontFamily="'JetBrains Mono', monospace" fontSize="14">
+            <g transform="translate(200, 0)">
+              <text textAnchor="middle" fill="oklch(0.72 0.1 85)" letterSpacing="4">EXPECTED</text>
+              <text y="28" textAnchor="middle" fontFamily="'Playfair Display', serif" fontSize="28" fill="oklch(0.94 0.02 85)">{expectedStr}</text>
+            </g>
+            <g transform="translate(600, 0)">
+              <text textAnchor="middle" fill="oklch(0.72 0.1 85)" letterSpacing="4">DELTA</text>
+              <text y="28" textAnchor="middle" fontFamily="'Playfair Display', serif" fontSize="28" fill={delta >= 0 ? 'oklch(0.75 0.2 25)' : 'oklch(0.82 0.2 150)'}>{deltaStr}</text>
+            </g>
+            <g transform="translate(1000, 0)">
+              <text textAnchor="middle" fill="oklch(0.72 0.1 85)" letterSpacing="4">SEED</text>
+              <text y="28" textAnchor="middle" fontFamily="'JetBrains Mono', monospace" fontSize="24" fill="oklch(0.82 0.14 85)">{seedHex}</text>
+            </g>
+          </g>
+          <text x="600" y="590" textAnchor="middle" fontFamily="'Playfair Display', serif" fontStyle="italic" fontSize="14" fill="oklch(0.72 0.03 85)">{tierMeta.subtitle}</text>
+        </svg>
+      );
+    }
+
+    // ========== MiniRoulettePreview ==========
+    function MiniRoulettePreview({ strategy, expected, spread, compact = false }) {
+      const N = 24;
+      const R = 90, INNER = 22;
+      const sectors = useMemo(() => {
+        const E = Math.max(1, expected);
+        let s = (0x9e3779b9 ^ ((E * 31) >>> 0) ^ (strategy.charCodeAt(0) * 7)) >>> 0;
+        const rnd = () => { s = (Math.imul(s ^ (s >>> 16), 0x45d9f3b) ^ (s >>> 4)) >>> 0; return s / 0xffffffff; };
+        return Array.from({ length: N }, () => {
+          const u = rnd();
+          let amt;
+          switch (strategy) {
+            case 'stable':    amt = Math.max(0, Math.round(E * (0.6 + u * 0.8))); break;
+            case 'gambler':   amt = Math.round(rnd() < 0.5 ? E * u * 0.25 : E * (1.5 + u * 0.55)); break;
+            case 'risktaker': amt = Math.max(0, Math.round(E * (0.05 + u * 1.9))); break;
+            case 'fortune':   amt = Math.round(u * E * 2); break;
+            case 'jackpot':   { const q = rnd(); amt = Math.round(q < 0.72 ? E * u * 0.3 : q < 0.9 ? E * (0.7 + u) : E * (2.5 + u * 4)); break; }
+            default:          amt = Math.round(E * (0.4 + u * 1.2));
+          }
+          const r = amt / Math.max(1, E);
+          let fill;
+          if (r < 0.25)      fill = 'oklch(0.46 0.24 148)';
+          else if (r < 0.6)  fill = 'oklch(0.50 0.2 145)';
+          else if (r < 0.85) fill = 'oklch(0.52 0.18 115)';
+          else if (r < 1.15) fill = 'oklch(0.52 0.16 85)';
+          else if (r < 1.5)  fill = 'oklch(0.52 0.2 48)';
+          else if (r < 2.0)  fill = 'oklch(0.46 0.24 25)';
+          else               fill = 'oklch(0.35 0.26 15)';
+          return { amt, fill, r };
+        });
+      }, [strategy, expected]);
+
+      const renderSlice = (s, i) => {
+        const a1 = (i / N * 360 - 90) * Math.PI / 180;
+        const a2 = ((i+1) / N * 360 - 90) * Math.PI / 180;
+        const x1o=Math.cos(a1)*R, y1o=Math.sin(a1)*R, x2o=Math.cos(a2)*R, y2o=Math.sin(a2)*R;
+        const x1i=Math.cos(a1)*INNER, y1i=Math.sin(a1)*INNER, x2i=Math.cos(a2)*INNER, y2i=Math.sin(a2)*INNER;
+        const d = `M${x1i},${y1i}L${x1o},${y1o}A${R},${R},0,0,1,${x2o},${y2o}L${x2i},${y2i}A${INNER},${INNER},0,0,0,${x1i},${y1i}Z`;
+        const midAng = ((i+0.5)/N*360-90)*Math.PI/180;
+        const tR = (R + INNER) / 2;
+        const tx = Math.cos(midAng)*tR, ty = Math.sin(midAng)*tR;
+        const rot = (i+0.5)/N*360;
+        const label = s.amt >= 10000 ? `${(s.amt/1000).toFixed(0)}k` : s.amt >= 1000 ? `${(s.amt/1000).toFixed(1)}k` : `${s.amt}`;
+        const danger = s.r >= 1.5;
+        const lucky  = s.r < 0.3;
+        return (
+          <g key={i}>
+            <path d={d} fill={s.fill} />
+            <line x1={x1i} y1={y1i} x2={x1o} y2={y1o} stroke="oklch(0.05 0.01 0 / 0.5)" strokeWidth="0.6" />
+            <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
+              transform={`rotate(${rot},${tx},${ty})`}
+              fontSize="6.5" fontFamily="'JetBrains Mono',monospace"
+              fill={s.r >= 0.85 && s.r < 1.15 ? 'oklch(0.1 0.02 0)' : 'oklch(0.96 0.02 85)'}
+              fontWeight="600">
+              {danger ? '⚠' : lucky ? '★' : ''}{label}
+            </text>
+          </g>
+        );
+      };
+
+      const LEGEND = [
+        { fill:'oklch(0.46 0.24 148)', label:'格安（<25%）' },
+        { fill:'oklch(0.52 0.16 85)',  label:'相場付近' },
+        { fill:'oklch(0.46 0.24 25)',  label:'⚠ 高額（>1.5×）' },
+        { fill:'oklch(0.35 0.26 15)',  label:'⚠⚠ 爆死（>2×）' },
+      ];
+
+      const wheelSvg = (size) => (
+        <svg viewBox="-100 -100 200 200" style={{ width:size, height:size, display:'block', flexShrink:0 }}>
+          <circle r="98" fill="oklch(0.14 0.04 55)" stroke="oklch(0.82 0.14 85 / 0.5)" strokeWidth="1.5" />
+          <circle r="92" fill="oklch(0.1 0.02 150)" stroke="oklch(0.82 0.14 85 / 0.2)" strokeWidth="0.5" />
+          {sectors.map((s, i) => renderSlice(s, i))}
+          <circle r={INNER} fill="oklch(0.12 0.03 150)" stroke="oklch(0.82 0.14 85 / 0.5)" strokeWidth="1" />
+          <circle r="5" fill="oklch(0.82 0.14 85)" />
+        </svg>
+      );
+
+      if (compact) return (
+        <div className="mini-rlt-compact">
+          {wheelSvg(140)}
+          <div className="legend">
+            {LEGEND.map((l, i) => (
+              <div key={i} className="legend-row">
+                <span className="legend-dot" style={{ background: l.fill }} />
+                <span className="legend-text">{l.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      return (
+        <div style={{ display:'flex', gap:16, alignItems:'center', marginTop:14, flexWrap:'wrap' }}>
+          <div style={{ flex:'0 0 auto', width:180 }}>{wheelSvg(180)}</div>
+          <div style={{ flex:'1 1 120px', display:'flex', flexDirection:'column', gap:5 }}>
+            {LEGEND.map((l, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:7 }}>
+                <span style={{ width:12, height:12, borderRadius:2, background:l.fill, flexShrink:0, display:'inline-block' }} />
+                <span style={{ fontSize:10, color:'var(--text-dim)', fontFamily:'var(--font-mono)', letterSpacing:'0.04em', lineHeight:1.5 }}>{l.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ========== SetupScreen (2-step wizard) ==========
+    function SetupScreen({ expected, people, name, setName, strategy, setStrategy, curve, strategyDef, onRoll }) {
+      const STRATEGIES = window.STRATEGIES;
+      const STRATEGY_ORDER = window.STRATEGY_ORDER;
+      const accentMap = { cyan: 'var(--neon-cyan)', red: 'var(--neon-red)', purple: 'var(--neon-purple)', gold: 'var(--gold)', magenta: 'var(--neon-magenta)' };
+      const [step, setStep] = useState(1);
+      const sliderRef = useRef(null);
+      const cardRefs = useRef({});
+      const inputRef = useRef(null);
+
+      useEffect(() => { if (step === 1 && inputRef.current) inputRef.current.focus(); }, [step]);
+
+      const onSliderScroll = () => {
+        const wrap = sliderRef.current; if (!wrap) return;
+        const center = wrap.scrollLeft + wrap.clientWidth / 2;
+        let bestId = STRATEGY_ORDER[0], bestDist = Infinity;
+        STRATEGY_ORDER.forEach((id) => {
+          const el = cardRefs.current[id]; if (!el) return;
+          const d = Math.abs(el.offsetLeft + el.clientWidth / 2 - center);
+          if (d < bestDist) { bestDist = d; bestId = id; }
+        });
+        if (bestId !== strategy) setStrategy(bestId);
+      };
+
+      const currentIdx = STRATEGY_ORDER.indexOf(strategy);
+      const accent = accentMap[strategyDef.accent] || 'var(--gold)';
+
+      // Step 1: Brand landing + name entry
+      if (step === 1) return (
+        <div className="wiz-screen">
+          <div className="wiz-card gold-frame" style={{ padding: 0, overflow: 'hidden' }}>
+
+            {/* Hero graphic — decorative roulette + brand */}
+            <div className="landing-hero">
+              <div className="landing-wheel-wrap" aria-hidden>
+                <svg viewBox="-130 -130 260 260" className="landing-wheel-svg">
+                  <defs>
+                    <radialGradient id="lnd-bezel" cx="40%" cy="30%">
+                      <stop offset="0%" stopColor="oklch(0.32 0.07 58)" />
+                      <stop offset="100%" stopColor="oklch(0.12 0.03 55)" />
+                    </radialGradient>
+                  </defs>
+                  {/* Bezel */}
+                  <circle r="128" fill="url(#lnd-bezel)" />
+                  <circle r="122" fill="none" stroke="oklch(0.82 0.14 85 / 0.6)" strokeWidth="1.4" />
+                  <circle r="116" fill="none" stroke="oklch(0.82 0.14 85 / 0.2)" strokeWidth="0.5" />
+                  {/* Track */}
+                  <circle r="110" fill="oklch(0.12 0.03 200)" stroke="oklch(0.82 0.14 85 / 0.35)" strokeWidth="1" />
+                  {/* Sectors */}
+                  {Array.from({ length: 24 }, (_, i) => {
+                    const a1 = (i / 24 * 360 - 90) * Math.PI / 180;
+                    const a2 = ((i+1) / 24 * 360 - 90) * Math.PI / 180;
+                    const ro = 106, ri = 38;
+                    const x1o=Math.cos(a1)*ro, y1o=Math.sin(a1)*ro, x2o=Math.cos(a2)*ro, y2o=Math.sin(a2)*ro;
+                    const x1i=Math.cos(a1)*ri, y1i=Math.sin(a1)*ri, x2i=Math.cos(a2)*ri, y2i=Math.sin(a2)*ri;
+                    const pathD = 'M'+x1i+','+y1i+'L'+x1o+','+y1o+'A'+ro+','+ro+',0,0,1,'+x2o+','+y2o+'L'+x2i+','+y2i+'A'+ri+','+ri+',0,0,0,'+x1i+','+y1i+'Z';
+                    const colors = [
+                      'oklch(0.46 0.24 148)','oklch(0.12 0.01 0)',
+                      'oklch(0.50 0.2 145)', 'oklch(0.12 0.01 0)',
+                      'oklch(0.52 0.18 115)','oklch(0.12 0.01 0)',
+                      'oklch(0.52 0.16 85)', 'oklch(0.12 0.01 0)',
+                      'oklch(0.52 0.2 48)',  'oklch(0.12 0.01 0)',
+                      'oklch(0.46 0.24 25)', 'oklch(0.12 0.01 0)',
+                      'oklch(0.35 0.26 15)', 'oklch(0.12 0.01 0)',
+                      'oklch(0.46 0.24 25)', 'oklch(0.12 0.01 0)',
+                      'oklch(0.52 0.2 48)',  'oklch(0.12 0.01 0)',
+                      'oklch(0.52 0.16 85)', 'oklch(0.12 0.01 0)',
+                      'oklch(0.52 0.18 115)','oklch(0.12 0.01 0)',
+                      'oklch(0.50 0.2 145)', 'oklch(0.12 0.01 0)',
+                    ];
+                    const midAng = ((i+0.5)/24*360-90)*Math.PI/180;
+                    const tR = (ro+ri)/2;
+                    const tx = Math.cos(midAng)*tR, ty = Math.sin(midAng)*tR;
+                    const rot = (i+0.5)/24*360;
+                    const amtLabels = ['¥3k','？','¥5k','？','¥2k','？','¥10k','？','¥1k','？','¥8k','？','¥15k','？','¥8k','？','¥1k','？','¥10k','？','¥2k','？','¥5k','？'];
+                    return (
+                      <g key={i}>
+                        <path d={pathD} fill={colors[i]} />
+                        <line x1={x1i} y1={y1i} x2={x1o} y2={y1o} stroke="oklch(0.08 0.01 0/0.7)" strokeWidth="0.7"/>
+                        {i % 2 === 0 && <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
+                          transform={'rotate('+rot+','+tx+','+ty+')'}
+                          fontSize="5" fontFamily="'JetBrains Mono',monospace"
+                          fill="oklch(0.94 0.02 85)" fontWeight="600">{amtLabels[i]}</text>}
+                      </g>
+                    );
+                  })}
+                  {/* Outer ring + diamonds */}
+                  <circle r="106" fill="none" stroke="oklch(0.7 0.07 85/0.7)" strokeWidth="1.2"/>
+                  {Array.from({length:8},(_,i)=>{
+                    const a=(i/8*360-90)*Math.PI/180;
+                    const cx=Math.cos(a)*112, cy=Math.sin(a)*112;
+                    return <g key={i} transform={'translate('+cx+','+cy+') rotate('+(i/8*360)+')'}>
+                      <rect x="-3.5" y="-3.5" width="7" height="7" rx="0.8" fill="oklch(0.78 0.12 85)" transform="rotate(45)"/>
+                    </g>;
+                  })}
+                  {/* Hub */}
+                  <circle r="38" fill="oklch(0.1 0.03 150)" stroke="oklch(0.82 0.14 85/0.5)" strokeWidth="1.2"/>
+                  {/* Brand text in hub */}
+                  <text y="-6" textAnchor="middle" fontFamily="'Playfair Display',serif" fontSize="7" fill="oklch(0.82 0.14 85)" letterSpacing="1">大人の</text>
+                  <text y="3" textAnchor="middle" fontFamily="'Playfair Display',serif" fontSize="6" fill="oklch(0.82 0.14 85/0.7)" letterSpacing="0.5">ビッくら</text>
+                  <text y="12" textAnchor="middle" fontFamily="'Playfair Display',serif" fontSize="7" fill="oklch(0.82 0.14 85)" letterSpacing="1">ポン</text>
+                  <circle r="6" fill="oklch(0.82 0.14 85)"/>
+                  <circle r="2.5" fill="oklch(0.15 0.02 150)"/>
+                  {/* Ball */}
+                  <circle cx="0" cy="-112" r="7"
+                    fill="oklch(0.97 0.01 85)" stroke="oklch(0.7 0.02 85)" strokeWidth="1"
+                    style={{filter:'drop-shadow(0 0 6px oklch(1 0 0 / 0.8))'}}/>
+                  <circle cx="-2" cy="-114.5" r="2" fill="oklch(1 0 0 / 0.7)"/>
+                </svg>
+              </div>
+
+              {/* Brand overlay */}
+              <div className="landing-brand-overlay">
+                <div className="landing-brand-title">大人の<br/>ビッくらポン</div>
+                <div className="landing-brand-en">ADULT BIGLUCKY POP · 2026</div>
+                <div className="landing-brand-copy">
+                  飲み会の支払いを<br/>ルーレットに委ねよ
+                </div>
+              </div>
+            </div>
+
+            {/* Form area */}
+            <div className="landing-form">
+              <div className="wiz-meta">
+                <span>期待値 <b>¥{expected.toLocaleString('en-US')}</b></span>
+                <span>{people}名</span>
+                <span>総額 <b>¥{(expected * people).toLocaleString('en-US')}</b></span>
+              </div>
+              <div className="wiz-step-label">あなたの名前を入れてください</div>
+              <input
+                ref={inputRef}
+                className="wiz-input"
+                type="text"
+                placeholder="例 · 山田太郎"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing && name.trim()) setStep(2); }}
+              />
+              <button className="cta wiz-btn" onClick={() => setStep(2)} disabled={!name.trim()}>
+                次へ → 志向を選ぶ
+              </button>
+              <div style={{ marginTop:10, fontSize:10, color:'var(--text-dim)', fontFamily:'var(--font-mono)', textAlign:'center', letterSpacing:'0.1em' }}>
+                同じ名前・同じ設定なら、結果は毎回同じ
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      // Step 2: Strategy + mini roulette + spin
+      return (
+        <div className="wiz-screen">
+          <div className="wiz-card gold-frame">
+            <button className="wiz-back" onClick={() => setStep(1)}>← {name}</button>
+            <div className="wiz-step-label">STEP 2 · 志向を選ぶ</div>
+
+            {/* Strategy slider (always slider-style on all breakpoints) */}
+            <div className="wiz-strategy-slider" ref={sliderRef} onScroll={onSliderScroll}>
+              {STRATEGY_ORDER.map((id) => {
+                const s = STRATEGIES[id];
+                const a = accentMap[s.accent] || 'var(--gold)';
+                return (
+                  <button key={id} ref={(el) => { cardRefs.current[id] = el; }}
+                    className={`strategy-card wiz-strat-card ${strategy === id ? 'active' : ''}`}
+                    style={{ '--accent': a }} onClick={() => setStrategy(id)} type="button">
+                    <div className="glyph">{s.emoji}</div>
+                    <h3>{s.labelJa}</h3>
+                    <div className="sub-en">{s.labelEn}</div>
+                    <div className="tagline">{s.tagline}</div>
+                    <div className="accent" />
+                  </button>
+                );
+              })}
+            </div>
+            <div className="strategy-slider-dots" style={{ marginTop: 8 }}>
+              {STRATEGY_ORDER.map((id, i) => (
+                <button key={id} type="button" className={`dot ${i === currentIdx ? 'active' : ''}`}
+                  onClick={() => { setStrategy(id); const el = cardRefs.current[id]; if (el && sliderRef.current) el.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' }); }}
+                  aria-label={STRATEGIES[id].labelJa} />
+              ))}
+            </div>
+
+            {/* Distribution curve + mini roulette preview */}
+            <div className="wiz-preview">
+              <div className="wiz-preview-label">
+                <span className="tracked-sm">分布プレビュー</span>
+                <span className="mono" style={{ fontSize:10, color:'var(--text-dim)' }}>{strategyDef.distribution}</span>
+              </div>
+              <div className="pdf-chart" style={{ marginBottom:10 }}>
+                <PdfChart curve={curve} accent={accent} />
+                <div className="pdf-label">0 — ¥{(expected * 2).toLocaleString('en-US')}</div>
+              </div>
+              <MiniRoulettePreview strategy={strategy} expected={expected} compact />
+            </div>
+
+            <button className="cta wiz-btn" onClick={onRoll}>
+              ◉ ルーレットを回す
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ========== ResultScreen (compact, no-scroll) ==========
+    function ResultScreen({ spinning, ready, name, strategy, expected, amount, tier, tierMeta, verse, seedHex, speed, shareUrl, onCopy, onReset, onStartSpin }) {
+      const delta = amount - expected;
+      const pct = ((amount / expected - 1) * 100).toFixed(1);
+      const [progress, setProgress] = useState(0);
+      const [shareOpen, setShareOpen] = useState(false);
+      useEffect(() => { if (!spinning) setProgress(1); else setProgress(0); }, [spinning]);
+      const liveAmount = spinning ? Math.round(amount * Math.pow(progress, 1.2)) : amount;
+
+      const headerText = ready ? `${name} · ${strategy.labelJa}` :
+                         spinning ? '運命を決定中…' :
+                         `${name} · ${strategy.labelJa}`;
+
+      return (
+        <div className="wiz-screen result-screen" style={{ '--tier-hue': tierMeta.hue }}>
+          <div className="wiz-card gold-frame" style={{ padding:'16px 18px' }}>
+            <div className="tracked" style={{ textAlign:'center', marginBottom:6, fontSize:10 }}>
+              {headerText}
+            </div>
+            <div className={`stage stage-${strategy.id}${spinning ? ' spinning' : ''}`}
+              style={{ minHeight:0, padding:'10px 8px', borderRadius:6, position:'relative' }}>
+              <div className="spotlight" />
+              <RouletteWheel strategy={strategy.id} amount={amount} expected={expected}
+                spinning={spinning} speed={speed} onProgress={setProgress} ready={ready} />
+              {/* Amount display — hidden during ready/spinning, revealed on landing */}
+              {!ready && !spinning && (
+              <div className="plinko-amount" style={{ marginTop:4 }}>
+                <Odometer value={amount} spinning={false}
+                  spinDuration={7200 / Math.max(0.5, speed)}
+                  strategy={strategy.id} expected={expected}
+                  displayValue={null} />
+              </div>
+              )}
+
+              {/* ── Overlay throw button (ready state only) ── */}
+              {ready && (
+                <button onClick={onStartSpin} className="throw-btn" aria-label="ボールを投げる">
+                  <span className="throw-btn-label">ボールを投げる</span>
+                </button>
+              )}
+            </div>
+            {!spinning && !ready && (
+              <div style={{ marginTop:14, textAlign:'center' }}>
+                <span className="tier-chip" style={{ fontSize:13, padding:'6px 16px' }}>
+                  <span className="dot" />{tierMeta.label} · {tier.toUpperCase()}
+                </span>
+                <div className="subtitle-big" style={{ fontSize:'clamp(18px,4vw,26px)', margin:'10px 0 4px' }}>
+                  {tierMeta.subtitle}
+                </div>
+                <div className="verse" style={{ fontSize:13, margin:'4px auto 12px' }}>"{verse}"</div>
+                <div style={{ display:'flex', justifyContent:'center', gap:16, fontSize:11,
+                  fontFamily:'var(--font-mono)', color:'var(--text-dim)', marginBottom:14, flexWrap:'wrap' }}>
+                  <span>期待値 <b style={{ color:'var(--gold)' }}>¥{expected.toLocaleString('en-US')}</b></span>
+                  <span>差分 <b style={{ color: delta >= 0 ? 'oklch(0.75 0.2 25)' : 'oklch(0.72 0.2 150)' }}>
+                    {delta >= 0 ? '+' : ''}{delta.toLocaleString('en-US')}円 ({pct}%)
+                  </b></span>
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                  <button className="cta" style={{ width:'100%' }} onClick={onCopy}>◉ シェアURLをコピー</button>
+                  <button className="cta ghost" style={{ width:'100%' }} onClick={onReset}>もう一度</button>
+                </div>
+                <button onClick={() => setShareOpen(o => !o)}
+                  style={{ marginTop:12, background:'none', border:'none', color:'var(--text-dim)',
+                    fontFamily:'var(--font-mono)', fontSize:10, letterSpacing:'0.2em',
+                    cursor:'pointer', textTransform:'uppercase', padding:'4px 0' }}>
+                  {shareOpen ? '▲ プレビューを閉じる' : '▼ シェア画像プレビュー'}
+                </button>
+                {shareOpen && (
+                  <div style={{ marginTop:10 }}>
+                    <div className="share-card">
+                      <ShareCard name={name} amount={amount} strategy={strategy} expected={expected} tierMeta={tierMeta} seedHex={seedHex} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {!spinning && (
+            <>
+              <Burst vibe={tierMeta.vibe} hue={tierMeta.hue} seed={amount} />
+              {tierMeta.vibe === 'gloom' && <Rain intensity={tier === 'doom' ? 1.2 : 0.7} />}
+            </>
+          )}
+        </div>
+      );
+    }
+
+
+    // ========== TweaksPanel ==========
+    function TweaksPanel({ tweaks, onChange }) {
+      return (
+        <div className="tweaks">
+          <h4>✦ Tweaks</h4>
+          <div className="row">
+            <label>期待値 · expected (¥)</label>
+            <input type="number" min="500" max="50000" step="100" value={tweaks.expected} onChange={(e) => onChange('expected', parseInt(e.target.value, 10) || 0)} />
+          </div>
+          <div className="row">
+            <label>分散の強さ · spread ({tweaks.spread.toFixed(2)})</label>
+            <input type="range" min="0.3" max="2" step="0.05" value={tweaks.spread} onChange={(e) => onChange('spread', parseFloat(e.target.value))} />
+          </div>
+          <div className="row">
+            <label>演出スピード · speed ({tweaks.speed.toFixed(2)}×)</label>
+            <input type="range" min="0.5" max="2.5" step="0.1" value={tweaks.speed} onChange={(e) => onChange('speed', parseFloat(e.target.value))} />
+          </div>
+          <div className="row">
+            <label>カラーテーマ · theme</label>
+            <select value={tweaks.theme} onChange={(e) => onChange('theme', e.target.value)}>
+              <option value="casino">Casino Emerald</option>
+              <option value="ruby">Velvet Ruby</option>
+              <option value="midnight">Midnight Sapphire</option>
+              <option value="obsidian">Obsidian Gold</option>
+            </select>
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', marginTop: 8, lineHeight: 1.5 }}>
+            変更はURLではなくローカル反映。<br/>冪等性は名前・人数・期待値に基づく。
+          </div>
+        </div>
+      );
+    }
+
+    // ========== App ==========
+    function useQueryParams() {
+      const read = () => {
+        const p = new URLSearchParams(window.location.search);
+        return {
+          expected: parseInt(p.get('expected') || '5000', 10),
+          people: parseInt(p.get('people') || '6', 10),
+          strategy: p.get('strategy') || '',
+          name: p.get('name') || '',
+          result: p.get('result') === '1',
+        };
+      };
+      const [params, setParams] = useState(read);
+      useEffect(() => {
+        const onPop = () => setParams(read());
+        window.addEventListener('popstate', onPop);
+        return () => window.removeEventListener('popstate', onPop);
+      }, []);
+      const update = (patch, push = true) => {
+        const cur = new URLSearchParams(window.location.search);
+        Object.entries(patch).forEach(([k, v]) => {
+          if (v === null || v === undefined || v === '') cur.delete(k);
+          else cur.set(k, String(v));
+        });
+        const url = `${window.location.pathname}?${cur.toString()}`;
+        if (push) window.history.pushState({}, '', url);
+        else window.history.replaceState({}, '', url);
+        setParams(read());
+      };
+      return [params, update];
+    }
+
+    const VERSES = {
+      miracle: ['ほぼ無料。神に愛されし者。','杯はからっぽ、財布は満ちている。','今夜、運命の歯車はあなたの味方だった。'],
+      blessed: ['つつましい勝利、されど勝利。','明朝、鏡の中の自分に微笑みを。','幸運の種は確かにあなたに宿った。'],
+      neutral: ['可もなく不可もなく、粛々と。','正規分布の王道を、真ん中で歩く者。','期待通り ー それは退屈とは違う。'],
+      pain:    ['ちょっと痛い。だが耐えられぬほどではない。','次回、リベンジの機会を。','大人とは、黙って財布を開ける者のこと。'],
+      doom:    ['あなたの献身で会は成り立ちました。','乾杯。今夜の英雄は、あなたです。','背負うほど、物語は濃くなる。'],
+    };
+    function pickVerse(tier, rng) { const arr = VERSES[tier] || VERSES.neutral; return arr[Math.floor(rng() * arr.length)]; }
+
+    function App() {
+      const [params, setParams] = useQueryParams();
+      const [screen, setScreen] = useState(params.result && params.name && params.strategy ? 'loading' : 'setup');
+      const [name, setName] = useState(params.name || '');
+      const [strategy, setStrategy] = useState(params.strategy || 'stable');
+      const [spinning, setSpinning] = useState(false);
+      const [result, setResult] = useState(null);
+      const [tweaks, setTweaks] = useState(window.TWEAK_DEFAULTS || {});
+      const [copied, setCopied] = useState(false);
+      const [tweaksVisible, setTweaksVisible] = useState(false);
+
+      useEffect(() => {
+        const onMsg = (e) => {
+          if (!e.data || typeof e.data !== 'object') return;
+          if (e.data.type === '__activate_edit_mode') setTweaksVisible(true);
+          if (e.data.type === '__deactivate_edit_mode') setTweaksVisible(false);
+        };
+        window.addEventListener('message', onMsg);
+        try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch (_) {}
+        return () => window.removeEventListener('message', onMsg);
+      }, []);
+
+      const applyTweak = (k, v) => {
+        setTweaks((t) => {
+          const nx = { ...t, [k]: v };
+          try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [k]: v } }, '*'); } catch (_) {}
+          return nx;
+        });
+      };
+
+      const expected = tweaks.expected || params.expected || 5000;
+      const people = params.people || 6;
+      const spread = tweaks.spread ?? 1;
+      const speed = tweaks.speed ?? 1;
+      const theme = tweaks.theme || 'casino';
+
+      useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
+      const curve = useMemo(() => window.pdfCurve(strategy, expected, spread), [strategy, expected, spread]);
+
+      const roll = useCallback(async () => {
+        if (!name.trim()) return;
+        const seedStr = `${expected}|${people}|${strategy}|${name.trim()}`;
+        const rng = await window.makeRng(seedStr);
+        const amount = window.sampleAmount(strategy, expected, rng, spread);
+        const tier = window.reactionTier(amount, expected);
+        const verse = pickVerse(tier, rng);
+        setResult({ amount, tier, verse, seedHex: rng.seedHex });
+        setSpinning(false);
+        setScreen('ready'); // show wheel static — user must tap to throw ball
+        setParams({ expected, people, strategy, name: name.trim(), result: 1 }, true);
+      }, [name, expected, people, strategy, spread, speed]);
+
+      const startSpin = useCallback(() => {
+        if (!result) return;
+        setSpinning(true);
+        setScreen('spin');
+        const spinMs = 7200 / Math.max(0.5, speed);
+        setTimeout(() => { setSpinning(false); setScreen('result'); }, spinMs);
+      }, [result, speed]);
+
+      useEffect(() => {
+        if (screen === 'loading' && params.result && params.name && params.strategy) {
+          setName(params.name);
+          setStrategy(params.strategy);
+          const t = setTimeout(() => { roll(); }, 250);
+          return () => clearTimeout(t);
+        }
+      }, [screen]);
+
+      const shareUrl = useMemo(() => {
+        if (!result || !name) return '';
+        const u = new URL(window.location.href);
+        u.searchParams.set('expected', String(expected));
+        u.searchParams.set('people', String(people));
+        u.searchParams.set('strategy', strategy);
+        u.searchParams.set('name', name.trim());
+        u.searchParams.set('result', '1');
+        return u.toString();
+      }, [result, name, expected, people, strategy]);
+
+      const copyShare = async () => {
+        const url = shareUrl; if (!url) return;
+        let ok = false;
+        try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(url); ok = true; } } catch (_) {}
+        if (!ok) {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = url; ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            ok = document.execCommand('copy'); document.body.removeChild(ta);
+          } catch (_) {}
+        }
+        setCopied(ok ? 'ok' : 'fail');
+        setTimeout(() => setCopied(false), 2000);
+      };
+
+      const reset = () => {
+        setResult(null);
+        setScreen('setup');
+        setParams({ expected, people, strategy: '', name: '', result: '' }, true);
+      };
+
+      const strategyDef = window.STRATEGIES[strategy] || window.STRATEGIES.stable;
+      const tierMeta = result ? window.TIER_META[result.tier] : null;
+
+      return (
+        <>
+          <div className="brand">
+            <div className="brand-mark">大人のビッくらポン</div>
+            <div className="brand-sub">ADULT BIGLUCKY POP · CH. 2026</div>
+          </div>
+          {screen === 'setup' && (
+            <SetupScreen
+              expected={expected} people={people}
+              name={name} setName={setName}
+              strategy={strategy} setStrategy={setStrategy}
+              curve={curve} strategyDef={strategyDef}
+              onRoll={roll}
+            />
+          )}
+          {(screen === 'ready' || screen === 'spin' || screen === 'result') && result && (
+            <ResultScreen
+              spinning={spinning} name={name} strategy={strategyDef}
+              expected={expected} amount={result.amount}
+              tier={result.tier} tierMeta={tierMeta} verse={result.verse}
+              seedHex={result.seedHex} speed={speed} shareUrl={shareUrl}
+              onCopy={copyShare} onReset={reset}
+              onStartSpin={startSpin} ready={screen === 'ready'}
+            />
+          )}
+          {screen === 'loading' && (
+            <div className="card gold-frame" style={{ textAlign: 'center', padding: 40 }}>
+              <div className="tracked">Preparing…</div>
+            </div>
+          )}
+          {copied && (
+            <div className="copied show" style={copied === 'fail' ? { background: 'oklch(0.72 0.2 25)', color: 'white' } : undefined}>
+              {copied === 'fail' ? 'コピー失敗 — URLバーから手動コピーしてください' : 'URLをコピーしました'}
+            </div>
+          )}
+          {tweaksVisible && (<TweaksPanel tweaks={{ expected, spread, speed, theme }} onChange={applyTweak} />)}
+        </>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+
+  <!-- (original external component files kept in /components for reference; not loaded) -->
+</body>
+</html>
