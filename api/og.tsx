@@ -13,17 +13,20 @@ const NEON_GREEN = '#6FC48B';
 
 async function loadFont(family: string, weight: number, text: string): Promise<ArrayBuffer> {
   const cssUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&text=${encodeURIComponent(text)}&display=swap`;
+  // Google Fonts returns different formats (woff2 / woff / truetype) depending
+  // on the User-Agent. We want truetype/opentype for satori. Linux UA reliably
+  // returns truetype; Chrome Mac returns woff2.
+  // Simple User-Agent makes Google Fonts fall back to TTF (satori requires TTF/OTF, not WOFF/WOFF2).
   const cssRes = await fetch(cssUrl, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
-    },
+    headers: { 'User-Agent': 'Node.js' },
   });
+  if (!cssRes.ok) throw new Error(`Failed to fetch Google Fonts CSS for ${family} ${weight}: ${cssRes.status}`);
   const css = await cssRes.text();
-  const match = css.match(/src:\s*url\(([^)]+)\)\s*format\('(?:woff2|truetype|opentype)'\)/);
-  if (!match) throw new Error(`Font URL not found for ${family} ${weight}`);
+  const match = css.match(/src:\s*url\(([^)]+)\)/);
+  if (!match) throw new Error(`Font URL not found in CSS for ${family} ${weight}: ${css.slice(0, 200)}`);
   const fontUrl = match[1].replace(/['"]/g, '');
   const fontRes = await fetch(fontUrl);
+  if (!fontRes.ok) throw new Error(`Failed to fetch font for ${family} ${weight}: ${fontRes.status}`);
   return await fontRes.arrayBuffer();
 }
 
