@@ -2222,9 +2222,12 @@ main { padding: 20px 16px 40px; max-width: 520px; }
         const verse = pickVerse(tier, rng);
         setResult({ amount, tier, verse, seedHex: rng.seedHex });
         setSpinning(false);
-        setScreen('ready'); // show wheel static — user must tap to throw ball
+        // Shared-URL visitors (result=1 in query) skip the wheel/spin animation
+        // and land on the final result directly. Fresh runs from setup still
+        // see the static wheel and tap-to-spin interaction.
+        setScreen(params.result ? 'result' : 'ready');
         setParams({ expected, people, strategy, name: name.trim(), result: 1 }, true);
-      }, [name, expected, people, strategy, spread, speed]);
+      }, [name, expected, people, strategy, spread, speed, params.result]);
 
       const startSpin = useCallback(() => {
         if (!result) return;
