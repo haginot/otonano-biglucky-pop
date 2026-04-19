@@ -31,6 +31,7 @@ async function loadFont(family: string, weight: number, text: string): Promise<A
 }
 
 export default async function handler(req: any, res: any): Promise<void> {
+  console.log('[og] handler entry', req.url);
   try {
     const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
     const p = url.searchParams;
