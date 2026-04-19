@@ -149,6 +149,25 @@
       border-radius: 6px; padding: 12px 16px;
       display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px;
     }
+    .rank-picker { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+    .rank-pill {
+      padding: 4px 9px; border-radius: 999px;
+      background: oklch(0.14 0.035 150 / 0.9);
+      border: 1px solid oklch(0.82 0.14 85 / 0.18);
+      color: var(--text-dim);
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .rank-pill:hover { border-color: var(--gold-dim); color: var(--cream); }
+    .rank-pill.active {
+      background: oklch(0.82 0.14 85 / 0.18);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .person-expected {
+      font-family: var(--font-mono); font-size: 11px; color: var(--gold);
+      letter-spacing: 0.05em; margin-top: 4px;
+    }
     .person-card.revealed { border-color: oklch(0.82 0.14 85 / 0.45); }
     .person-info { min-width: 0; }
     .person-name {
@@ -255,9 +274,9 @@
 
   <div class="field-grid">
     <div class="field">
-      <label>期待値（一人あたり）</label>
+      <label>平均期待値（一人あたり）</label>
       <input type="number" id="expected" value="5000" min="100" max="100000" step="100" />
-      <div class="field-note">全員の平均支払い目標</div>
+      <div class="field-note">全員の平均 × 人数 ＝ 総額目標。個々の額はランクで配分</div>
     </div>
     <div class="field">
       <label>人数</label>
@@ -305,7 +324,9 @@
   <div class="field field-full" style="margin-bottom:16px">
     <label>参加者の名前（1行1名）</label>
     <textarea id="names" placeholder="田中太郎&#10;鈴木花子&#10;山田次郎&#10;佐藤美咲"></textarea>
-    <div class="field-note">空欄の場合は「参加者1」〜「参加者N名」で自動生成</div>
+    <div class="field-note">
+      空欄の場合は「参加者1」〜「参加者N名」で自動生成。生成後にランク（新卒〜役職の5段階）を設定できます
+    </div>
   </div>
 
   <div class="field field-full" style="margin-bottom:16px">
@@ -464,6 +485,7 @@ const strategySelect = document.getElementById('strategy');
 const lockSelect     = document.getElementById('lock-strategy');
 const namesTextarea  = document.getElementById('names');
 const baseUrlInput   = document.getElementById('base-url');
+const paypayUrlInput = document.getElementById('paypay-url');
 const btnGenerate    = document.getElementById('btn-generate');
 const resultsSection = document.getElementById('results-section');
 const personList     = document.getElementById('person-list');
@@ -479,13 +501,22 @@ baseUrlInput.value = defaultBase;
 function updateSummary() {
   const exp = parseInt(expectedInput.value) || 5000;
   const ppl = parseInt(peopleInput.value) || 1;
+  // Total always reflects the target (avgExpected × peopleCount). When entries
+  // exist, sum(expected_i) should equal this exactly — tiny rounding residuals
+  // are absorbed during recomputeExpected.
+  const n = generatedEntries.length || ppl;
+  const sum = generatedEntries.length
+    ? generatedEntries.reduce((s, e) => s + (e.expected || 0), 0)
+    : exp * ppl;
   document.getElementById('sum-expected').textContent = '¥' + exp.toLocaleString('en-US');
-  document.getElementById('sum-people').textContent = ppl + '名';
-  document.getElementById('sum-total').textContent = '¥' + (exp * ppl).toLocaleString('en-US');
-  document.getElementById('sum-session').textContent = '#' + (exp*31+ppl).toString(16).padStart(4,'0').toUpperCase();
+  document.getElementById('sum-people').textContent = (generatedEntries.length || ppl) + '名';
+  document.getElementById('sum-total').textContent = '¥' + sum.toLocaleString('en-US');
+  document.getElementById('sum-session').textContent = '#' + (exp*31+n).toString(16).padStart(4,'0').toUpperCase();
 }
-expectedInput.addEventListener('input', updateSummary);
+expectedInput.addEventListener('input', () => { if (generatedEntries.length) refreshAfterEdit(); else updateSummary(); });
 peopleInput.addEventListener('input', updateSummary);
+strategySelect.addEventListener('change', () => { if (generatedEntries.length) refreshAfterEdit(); });
+paypayUrlInput.addEventListener('input', () => { if (generatedEntries.length) refreshAfterEdit(); });
 updateSummary();
 
 // Tab switching
@@ -515,9 +546,9 @@ function isValidPayPayUrl(url) {
   } catch (_) { return false; }
 }
 
-function buildUrl(name, expected, people, strategy, baseUrl, paypay) {
+function buildUrl(name, perPersonExpected, people, strategy, baseUrl, paypay) {
   const u = new URL(baseUrl);
-  u.searchParams.set('expected', String(expected));
+  u.searchParams.set('expected', String(perPersonExpected));
   u.searchParams.set('people', String(people));
   u.searchParams.set('strategy', strategy);
   u.searchParams.set('name', name.trim());
@@ -525,18 +556,72 @@ function buildUrl(name, expected, people, strategy, baseUrl, paypay) {
   return u.toString();
 }
 
-const paypayUrlInput = document.getElementById('paypay-url');
+// ===== Rank config =====
+// Rank 1..5 maps to relative weight. Tier 3 is the baseline (= average expected).
+// Since weights are proportional, the per-person share is:
+//   expected_i = totalBill * rank_i / sum(ranks)
+// which keeps the sum of all expected values exactly equal to totalBill.
+const RANK_WEIGHTS = [1, 2, 3, 4, 5];
+const RANK_LABELS  = ['新卒', '若手', '中堅', 'シニア', '役職'];
+const DEFAULT_RANK = 3;
+
+function rankOf(i) { return RANK_WEIGHTS[i - 1] || 3; }
+
+// Distribute the total bill across entries by rank weights, keeping integer yen
+// and ensuring sum === totalBill exactly (residual added to highest ranks first).
+function recomputeExpected(entries, avgExpected) {
+  const total = Math.round(avgExpected * entries.length);
+  const sumWeights = entries.reduce((s, e) => s + rankOf(e.rank), 0);
+  if (sumWeights <= 0) {
+    entries.forEach(e => { e.expected = avgExpected; });
+    return;
+  }
+  const floors = entries.map(e => Math.floor(total * rankOf(e.rank) / sumWeights));
+  let residual = total - floors.reduce((s, x) => s + x, 0);
+  const order = entries
+    .map((e, i) => ({ i, rank: e.rank }))
+    .sort((a, b) => b.rank - a.rank || a.i - b.i)
+    .map(o => o.i);
+  for (let k = 0; k < residual && k < order.length; k++) {
+    floors[order[k]] += 1;
+  }
+  entries.forEach((e, i) => { e.expected = floors[i]; });
+}
+
+function rebuildUrls(entries, people, strategy, baseUrl, paypay) {
+  entries.forEach(e => {
+    e.people = people;
+    e.strategy = strategy;
+    e.url = buildUrl(e.name, e.expected, people, strategy, baseUrl, paypay);
+  });
+}
+
+function getCurrentSettings() {
+  return {
+    avgExpected: parseInt(expectedInput.value) || 5000,
+    people: parseInt(peopleInput.value) || 6,
+    strategy: strategySelect.value,
+    baseUrl: baseUrlInput.value || defaultBase,
+    paypay: paypayUrlInput.value.trim(),
+  };
+}
+
+function refreshAfterEdit() {
+  const s = getCurrentSettings();
+  recomputeExpected(generatedEntries, s.avgExpected);
+  rebuildUrls(generatedEntries, s.people, s.strategy, s.baseUrl, s.paypay);
+  renderPersonList();
+  renderQrGrid();
+  renderResultsTable();
+  updateSummary();
+}
 
 // Generate
 btnGenerate.addEventListener('click', async () => {
-  const expected = parseInt(expectedInput.value) || 5000;
-  const people   = parseInt(peopleInput.value) || 6;
-  const strategy = strategySelect.value;
-  const baseUrl  = baseUrlInput.value || defaultBase;
-  const paypayRaw = paypayUrlInput.value.trim();
+  const s = getCurrentSettings();
   const namesRaw = namesTextarea.value.trim();
 
-  if (paypayRaw && !isValidPayPayUrl(paypayRaw)) {
+  if (s.paypay && !isValidPayPayUrl(s.paypay)) {
     showToast('PayPay URLは qr.paypay.ne.jp か p.paypay.ne.jp のみ対応');
     return;
   }
@@ -545,15 +630,20 @@ btnGenerate.addEventListener('click', async () => {
   if (namesRaw) {
     names = namesRaw.split('\n').map(n => n.trim()).filter(Boolean);
   } else {
-    names = Array.from({length: people}, (_, i) => '参加者' + (i+1));
+    names = Array.from({length: s.people}, (_, i) => '参加者' + (i+1));
   }
 
   generatedEntries = names.map(name => ({
     name,
-    url: buildUrl(name, expected, people, strategy, baseUrl, paypayRaw),
-    expected, people, strategy,
+    rank: DEFAULT_RANK,
+    expected: s.avgExpected,
+    url: '',
+    people: s.people,
+    strategy: s.strategy,
     amount: null, tier: null,
   }));
+  recomputeExpected(generatedEntries, s.avgExpected);
+  rebuildUrls(generatedEntries, s.people, s.strategy, s.baseUrl, s.paypay);
 
   renderPersonList();
   renderQrGrid();
@@ -567,13 +657,19 @@ function renderPersonList() {
   generatedEntries.forEach((entry, idx) => {
     const card = document.createElement('div');
     card.className = 'person-card' + (entry.amount !== null ? ' revealed' : '');
+    const rankPills = RANK_LABELS.map((label, i) => {
+      const r = i + 1;
+      return `<button class="rank-pill${entry.rank === r ? ' active' : ''}" data-rank-set="${r}" data-idx="${idx}" type="button">${label}</button>`;
+    }).join('');
     card.innerHTML = `
       <div class="person-info">
         <div class="person-name">${entry.name}</div>
+        <div class="person-expected">期待値 ¥${entry.expected.toLocaleString('en-US')}</div>
         ${entry.amount !== null
           ? `<div class="person-reveal ${entry.tier}">${entry.tier === 'doom' ? '⚠ ' : entry.tier === 'miracle' ? '★ ' : ''}¥${entry.amount.toLocaleString('en-US')} (${entry.tier})</div>`
           : `<div class="person-url">${entry.url.length > 70 ? entry.url.slice(0,70)+'…' : entry.url}</div>`
         }
+        <div class="rank-picker">${rankPills}</div>
       </div>
       <div class="person-actions">
         <button class="btn-person" data-action="copy" data-idx="${idx}">コピー</button>
@@ -586,7 +682,20 @@ function renderPersonList() {
     personList.appendChild(card);
   });
 
-  // Bind actions
+  // Rank pill toggling
+  personList.querySelectorAll('[data-rank-set]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const r = parseInt(btn.dataset.rankSet, 10);
+      if (!Number.isFinite(idx) || !generatedEntries[idx]) return;
+      generatedEntries[idx].rank = r;
+      generatedEntries[idx].amount = null;
+      generatedEntries[idx].tier = null;
+      refreshAfterEdit();
+    });
+  });
+
+  // Row action bindings
   personList.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const idx = parseInt(btn.dataset.idx);
