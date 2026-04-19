@@ -274,9 +274,9 @@
 
   <div class="field-grid">
     <div class="field">
-      <label>平均期待値（一人あたり）</label>
-      <input type="number" id="expected" value="5000" min="100" max="100000" step="100" />
-      <div class="field-note">全員の平均 × 人数 ＝ 総額目標。個々の額はランクで配分</div>
+      <label>総額（会計の合計）</label>
+      <input type="number" id="expected" value="30000" min="100" max="10000000" step="1000" />
+      <div class="field-note">会計の総額。個々の支払期待値はランクで配分（合計は総額と一致）</div>
     </div>
     <div class="field">
       <label>人数</label>
@@ -304,16 +304,16 @@
 
   <div class="summary-strip" id="summary-strip">
     <div class="summary-item">
-      <span class="k">期待値</span>
-      <span class="v accent" id="sum-expected">¥5,000</span>
+      <span class="k">総額</span>
+      <span class="v accent" id="sum-total">¥30,000</span>
     </div>
     <div class="summary-item">
       <span class="k">人数</span>
       <span class="v" id="sum-people">6名</span>
     </div>
     <div class="summary-item">
-      <span class="k">合計目標</span>
-      <span class="v" id="sum-total">¥30,000</span>
+      <span class="k">一人平均</span>
+      <span class="v" id="sum-avg">¥5,000</span>
     </div>
     <div class="summary-item">
       <span class="k">Session</span>
@@ -499,19 +499,19 @@ baseUrlInput.value = defaultBase;
 
 // Summary update
 function updateSummary() {
-  const exp = parseInt(expectedInput.value) || 5000;
+  const totalInput = parseInt(expectedInput.value) || 30000;
   const ppl = parseInt(peopleInput.value) || 1;
-  // Total always reflects the target (avgExpected × peopleCount). When entries
-  // exist, sum(expected_i) should equal this exactly — tiny rounding residuals
-  // are absorbed during recomputeExpected.
+  // totalShown reflects sum of individual expected values once generated
+  // (equals totalInput by construction); otherwise it shows the input total.
   const n = generatedEntries.length || ppl;
-  const sum = generatedEntries.length
+  const totalShown = generatedEntries.length
     ? generatedEntries.reduce((s, e) => s + (e.expected || 0), 0)
-    : exp * ppl;
-  document.getElementById('sum-expected').textContent = '¥' + exp.toLocaleString('en-US');
-  document.getElementById('sum-people').textContent = (generatedEntries.length || ppl) + '名';
-  document.getElementById('sum-total').textContent = '¥' + sum.toLocaleString('en-US');
-  document.getElementById('sum-session').textContent = '#' + (exp*31+n).toString(16).padStart(4,'0').toUpperCase();
+    : totalInput;
+  const avg = Math.round(totalShown / n);
+  document.getElementById('sum-total').textContent = '¥' + totalShown.toLocaleString('en-US');
+  document.getElementById('sum-people').textContent = n + '名';
+  document.getElementById('sum-avg').textContent = '¥' + avg.toLocaleString('en-US');
+  document.getElementById('sum-session').textContent = '#' + (totalInput*31+n).toString(16).padStart(4,'0').toUpperCase();
 }
 expectedInput.addEventListener('input', () => { if (generatedEntries.length) refreshAfterEdit(); else updateSummary(); });
 peopleInput.addEventListener('input', updateSummary);
@@ -569,11 +569,13 @@ function rankOf(i) { return RANK_WEIGHTS[i - 1] || 3; }
 
 // Distribute the total bill across entries by rank weights, keeping integer yen
 // and ensuring sum === totalBill exactly (residual added to highest ranks first).
-function recomputeExpected(entries, avgExpected) {
-  const total = Math.round(avgExpected * entries.length);
+function recomputeExpected(entries, totalBill) {
+  const total = Math.round(totalBill);
+  if (!entries.length) return;
   const sumWeights = entries.reduce((s, e) => s + rankOf(e.rank), 0);
   if (sumWeights <= 0) {
-    entries.forEach(e => { e.expected = avgExpected; });
+    const share = Math.floor(total / entries.length);
+    entries.forEach(e => { e.expected = share; });
     return;
   }
   const floors = entries.map(e => Math.floor(total * rankOf(e.rank) / sumWeights));
@@ -598,7 +600,7 @@ function rebuildUrls(entries, people, strategy, baseUrl, paypay) {
 
 function getCurrentSettings() {
   return {
-    avgExpected: parseInt(expectedInput.value) || 5000,
+    totalBill: parseInt(expectedInput.value) || 30000,
     people: parseInt(peopleInput.value) || 6,
     strategy: strategySelect.value,
     baseUrl: baseUrlInput.value || defaultBase,
@@ -608,7 +610,7 @@ function getCurrentSettings() {
 
 function refreshAfterEdit() {
   const s = getCurrentSettings();
-  recomputeExpected(generatedEntries, s.avgExpected);
+  recomputeExpected(generatedEntries, s.totalBill);
   rebuildUrls(generatedEntries, s.people, s.strategy, s.baseUrl, s.paypay);
   renderPersonList();
   renderQrGrid();
@@ -633,17 +635,18 @@ btnGenerate.addEventListener('click', async () => {
     names = Array.from({length: s.people}, (_, i) => '参加者' + (i+1));
   }
 
+  const effectivePeople = namesRaw ? names.length : s.people;
   generatedEntries = names.map(name => ({
     name,
     rank: DEFAULT_RANK,
-    expected: s.avgExpected,
+    expected: Math.floor(s.totalBill / names.length),
     url: '',
-    people: s.people,
+    people: effectivePeople,
     strategy: s.strategy,
     amount: null, tier: null,
   }));
-  recomputeExpected(generatedEntries, s.avgExpected);
-  rebuildUrls(generatedEntries, s.people, s.strategy, s.baseUrl, s.paypay);
+  recomputeExpected(generatedEntries, s.totalBill);
+  rebuildUrls(generatedEntries, effectivePeople, s.strategy, s.baseUrl, s.paypay);
 
   renderPersonList();
   renderQrGrid();
