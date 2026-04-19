@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>大人のビッくらポン · オーガナイザー設定</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --felt-0: oklch(0.14 0.035 150);
+      --felt-1: oklch(0.18 0.045 150);
+      --gold: oklch(0.82 0.14 85);
+      --gold-dim: oklch(0.62 0.12 85);
+      --cream: oklch(0.96 0.02 85);
+      --ink: oklch(0.08 0.02 150);
+      --text: oklch(0.94 0.02 85);
+      --text-dim: oklch(0.72 0.03 85);
+      --edge: oklch(0.28 0.04 150);
+      --font-display: 'Playfair Display', serif;
+      --font-ui: 'Noto Sans JP', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100vh; }
+    body {
+      font-family: var(--font-ui);
+      color: var(--text);
+      background: linear-gradient(180deg, var(--felt-0), var(--felt-1) 40%, var(--felt-0));
+      padding: 32px 16px 64px;
+    }
+
+    /* Header */
+    .header { text-align: center; margin-bottom: 32px; }
+    .header-eyebrow {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.45em;
+      text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px;
+    }
+    .header-title {
+      font-family: var(--font-display); font-size: clamp(28px, 6vw, 42px);
+      background: linear-gradient(180deg, oklch(0.95 0.12 85), oklch(0.68 0.14 82));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .header-sub {
+      margin-top: 6px; font-size: 12px; color: var(--text-dim);
+      font-family: var(--font-mono); letter-spacing: 0.08em;
+    }
+
+    /* Card */
+    .card {
+      max-width: 640px; margin: 0 auto 24px;
+      background: linear-gradient(180deg, oklch(0.22 0.05 150 / 0.92), oklch(0.16 0.04 150 / 0.92));
+      border: 1px solid oklch(0.82 0.14 85 / 0.3);
+      border-radius: 8px; padding: 28px 28px;
+      box-shadow: 0 20px 50px oklch(0 0 0 / 0.4), inset 0 1px 0 oklch(0.82 0.14 85 / 0.35);
+    }
+    .card-title {
+      font-family: var(--font-display); font-size: 16px; color: var(--gold);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, oklch(0.82 0.14 85 / 0.4), transparent);
+    }
+
+    /* Form fields */
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 500px) { .field-grid { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--gold-dim);
+    }
+    .field input, .field select {
+      height: 48px; padding: 0 14px;
+      background: oklch(0.1 0.025 150 / 0.9);
+      border: 1px solid oklch(0.82 0.14 85 / 0.22);
+      color: var(--cream); font-family: var(--font-display); font-size: 20px;
+      border-radius: 4px; outline: none; transition: border-color 0.2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px oklch(0.82 0.14 85 / 0.1);
+    }
+    .field select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a88442' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .field-note { font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); margin-top: 2px; }
+    .field-full { grid-column: 1 / -1; }
+
+    /* Summary strip */
+    .summary-strip {
+      display: flex; gap: 0; border: 1px solid oklch(0.82 0.14 85 / 0.2);
+      border-radius: 6px; overflow: hidden; margin: 20px 0;
+    }
+    .summary-item {
+      flex: 1; padding: 10px 14px; text-align: center;
+      border-right: 1px solid oklch(0.82 0.14 85 / 0.15);
+    }
+    .summary-item:last-child { border-right: none; }
+    .summary-item .k {
+      font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-dim); display: block; margin-bottom: 2px;
+    }
+    .summary-item .v {
+      font-family: var(--font-display); font-size: clamp(14px, 3vw, 20px); color: var(--cream);
+    }
+    .summary-item .v.accent { color: var(--gold); }
+
+    /* Generate button */
+    .btn-generate {
+      width: 100%; height: 54px;
+      background: linear-gradient(180deg, oklch(0.88 0.15 85), oklch(0.65 0.13 80));
+      color: var(--ink); border: 1px solid oklch(0.5 0.11 80); border-radius: 4px;
+      font-family: var(--font-display); font-size: 18px; font-weight: 600;
+      letter-spacing: 0.06em; cursor: pointer;
+      box-shadow: 0 8px 24px oklch(0.82 0.14 85 / 0.25), inset 0 1px 0 oklch(1 0 0 / 0.5);
+      transition: transform 0.15s, box-shadow 0.2s; margin-top: 8px;
+    }
+    .btn-generate:hover { transform: translateY(-1px); box-shadow: 0 12px 32px oklch(0.82 0.14 85 / 0.35), inset 0 1px 0 oklch(1 0 0 / 0.5); }
+    .btn-generate:active { transform: translateY(1px); }
+
+    /* Results */
+    .results { max-width: 640px; margin: 0 auto; }
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; flex-wrap: wrap; gap: 10px;
+    }
+    .results-title {
+      font-family: var(--font-display); font-size: 14px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold);
+    }
+    .btn-copy-all {
+      background: oklch(0.82 0.14 85 / 0.12);
+      border: 1px solid oklch(0.82 0.14 85 / 0.35);
+      color: var(--gold); padding: 6px 16px; border-radius: 4px;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-copy-all:hover { background: oklch(0.82 0.14 85 / 0.22); }
+
+    /* Person URL cards */
+    .person-list { display: flex; flex-direction: column; gap: 10px; }
+    .person-card {
+      background: oklch(0.16 0.04 150 / 0.85);
+      border: 1px solid oklch(0.82 0.14 85 / 0.18);
+      border-radius: 6px; padding: 12px 16px;
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px;
+    }
+    .person-card.revealed { border-color: oklch(0.82 0.14 85 / 0.45); }
+    .person-info { min-width: 0; }
+    .person-name {
+      font-family: var(--font-display); font-size: 16px; color: var(--cream);
+      margin-bottom: 4px;
+    }
+    .person-url {
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      letter-spacing: 0.05em;
+    }
+    .person-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-person {
+      padding: 6px 12px; border-radius: 4px; font-family: var(--font-mono);
+      font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.15s; border: 1px solid oklch(0.82 0.14 85 / 0.3);
+      background: oklch(0.82 0.14 85 / 0.08); color: var(--gold);
+      white-space: nowrap;
+    }
+    .btn-person:hover { background: oklch(0.82 0.14 85 / 0.18); }
+    .btn-person.copied { background: oklch(0.5 0.2 145 / 0.25); border-color: oklch(0.5 0.2 145 / 0.5); color: oklch(0.75 0.18 145); }
+
+    /* Result reveal (amount shown after reveal) */
+    .person-reveal {
+      font-family: var(--font-display); font-size: 13px;
+      color: oklch(0.82 0.14 85); margin-top: 2px; font-weight: 500;
+    }
+    .person-reveal.doom { color: oklch(0.65 0.22 25); }
+    .person-reveal.miracle { color: oklch(0.72 0.2 145); }
+
+    /* QR placeholder */
+    .qr-section { margin-top: 16px; }
+    .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .qr-card {
+      background: oklch(0.16 0.04 150 / 0.85); border: 1px solid oklch(0.82 0.14 85 / 0.2);
+      border-radius: 6px; padding: 12px; text-align: center;
+    }
+    .qr-card canvas { display: block; margin: 0 auto 8px; border-radius: 4px; }
+    .qr-name { font-family: var(--font-display); font-size: 13px; color: var(--cream); }
+
+    /* Base URL input */
+    .base-url-row { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; }
+    .base-url-row input {
+      flex: 1; height: 38px; padding: 0 12px;
+      background: oklch(0.1 0.025 150 / 0.7);
+      border: 1px solid oklch(0.82 0.14 85 / 0.15);
+      color: var(--text-dim); font-family: var(--font-mono); font-size: 11px;
+      border-radius: 4px; outline: none; letter-spacing: 0.04em;
+    }
+    .base-url-row label {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+      background: var(--gold); color: var(--ink); padding: 10px 22px; border-radius: 999px;
+      font-family: var(--font-display); font-weight: 600; letter-spacing: 0.1em;
+      opacity: 0; transition: all 0.3s var(--ease-out); z-index: 200;
+      box-shadow: 0 10px 30px oklch(0.82 0.14 85 / 0.4);
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Names textarea */
+    .field textarea {
+      padding: 10px 14px; min-height: 100px; resize: vertical;
+      background: oklch(0.1 0.025 150 / 0.9);
+      border: 1px solid oklch(0.82 0.14 85 / 0.22);
+      color: var(--cream); font-family: var(--font-ui); font-size: 15px;
+      border-radius: 4px; outline: none; transition: border-color 0.2s; line-height: 1.6;
+    }
+    .field textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px oklch(0.82 0.14 85 / 0.1); }
+
+    /* Tab bar */
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid oklch(0.82 0.14 85 / 0.2); margin-bottom: 20px; }
+    .tab {
+      padding: 8px 20px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--text-dim); cursor: pointer; border: none;
+      background: none; transition: color 0.2s; border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    @media (max-width: 480px) {
+      .card { padding: 20px 16px; }
+      .person-card { grid-template-columns: 1fr; }
+      .person-actions { justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">ORGANIZER DASHBOARD</div>
+  <div class="header-title">大人のビッくらポン</div>
+  <div class="header-sub">幹事用セットアップ · オーガナイザーツール</div>
+</div>
+
+<!-- Settings card -->
+<div class="card" id="settings-card">
+  <div class="card-title">◆ 宴会設定</div>
+
+  <div class="field-grid">
+    <div class="field">
+      <label>期待値（一人あたり）</label>
+      <input type="number" id="expected" value="5000" min="100" max="100000" step="100" />
+      <div class="field-note">全員の平均支払い目標</div>
+    </div>
+    <div class="field">
+      <label>人数</label>
+      <input type="number" id="people" value="6" min="1" max="50" step="1" />
+    </div>
+    <div class="field">
+      <label>デフォルト志向</label>
+      <select id="strategy">
+        <option value="stable">安定志向</option>
+        <option value="gambler">ギャンブラー</option>
+        <option value="risktaker">リスクテイカー</option>
+        <option value="fortune">運任せ</option>
+        <option value="jackpot">一発逆転</option>
+      </select>
+      <div class="field-note">参加者が変更可能</div>
+    </div>
+    <div class="field">
+      <label>志向を固定する</label>
+      <select id="lock-strategy">
+        <option value="0">いいえ（参加者が選べる）</option>
+        <option value="1">はい（変更不可）</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="summary-strip" id="summary-strip">
+    <div class="summary-item">
+      <span class="k">期待値</span>
+      <span class="v accent" id="sum-expected">¥5,000</span>
+    </div>
+    <div class="summary-item">
+      <span class="k">人数</span>
+      <span class="v" id="sum-people">6名</span>
+    </div>
+    <div class="summary-item">
+      <span class="k">合計目標</span>
+      <span class="v" id="sum-total">¥30,000</span>
+    </div>
+    <div class="summary-item">
+      <span class="k">Session</span>
+      <span class="v" id="sum-session" style="font-family:var(--font-mono);font-size:14px">#—</span>
+    </div>
+  </div>
+
+  <div class="field field-full" style="margin-bottom:16px">
+    <label>参加者の名前（1行1名）</label>
+    <textarea id="names" placeholder="田中太郎&#10;鈴木花子&#10;山田次郎&#10;佐藤美咲"></textarea>
+    <div class="field-note">空欄の場合は「参加者1」〜「参加者N名」で自動生成</div>
+  </div>
+
+  <div class="base-url-row">
+    <label>App URL</label>
+    <input type="text" id="base-url" readonly />
+  </div>
+
+  <button class="btn-generate" id="btn-generate">◉ 参加者URLを生成する</button>
+</div>
+
+<!-- Results -->
+<div class="results" id="results-section" style="display:none">
+  <div class="results-header">
+    <div class="results-title">◆ 参加者URL一覧</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-copy-all" id="btn-copy-all">全URLをコピー</button>
+      <button class="btn-copy-all" id="btn-reveal-all">全員の結果を表示</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="urls">URL一覧</button>
+    <button class="tab" data-tab="qr">QRコード</button>
+    <button class="tab" data-tab="results">結果集計</button>
+  </div>
+
+  <div id="tab-urls">
+    <div class="person-list" id="person-list"></div>
+  </div>
+  <div id="tab-qr" style="display:none">
+    <div class="qr-grid" id="qr-grid"></div>
+    <div style="margin-top:12px;font-size:10px;color:var(--text-dim);font-family:var(--font-mono);text-align:center;letter-spacing:0.1em">
+      各QRコードをスクリーンショットして参加者に配布できます
+    </div>
+  </div>
+  <div id="tab-results" style="display:none">
+    <div id="results-table"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== PRNG (same as main app) =====
+async function sha256Bytes(str) {
+  const buf = new TextEncoder().encode(str);
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return new Uint8Array(digest);
+}
+function bytesToSeed128(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, 16);
+  return [view.getUint32(0,true), view.getUint32(4,true), view.getUint32(8,true), view.getUint32(12,true)];
+}
+function rotl(x,k){ return ((x<<k)|(x>>>(32-k)))>>>0; }
+function xoshiro128ss(stateArr){
+  let [s0,s1,s2,s3] = stateArr;
+  if ((s0|s1|s2|s3)===0) s0=0x9E3779B9;
+  return function next(){
+    const result = (rotl((s1*5)>>>0,7)*9)>>>0;
+    const t = (s1<<9)>>>0;
+    s2 ^= s0; s3 ^= s1; s1 ^= s2; s0 ^= s3;
+    s2 ^= t; s3 = rotl(s3,11);
+    return result / 4294967296;
+  };
+}
+async function makeRng(seedStr) {
+  const bytes = await sha256Bytes(seedStr);
+  const state = bytesToSeed128(bytes);
+  const rng = xoshiro128ss(state);
+  for (let i=0;i<4;i++) rng();
+  const hex = Array.from(bytes.slice(0,4)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  rng.seedHex = hex;
+  return rng;
+}
+function sampleNormal(rng, mean=0, std=1){
+  let u1 = rng(); const u2 = rng();
+  if (u1 < 1e-12) u1 = 1e-12;
+  const z = Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+  return mean + z*std;
+}
+function sampleBeta(rng, alpha, betaP){
+  function sampleGamma(shape){
+    if (shape<1) { const g = sampleGamma(shape+1); return g * Math.pow(Math.max(rng(),1e-12), 1/shape); }
+    const d=shape-1/3, c=1/Math.sqrt(9*d);
+    while(true){
+      let x,v;
+      do { x=sampleNormal(rng,0,1); v=1+c*x; } while(v<=0);
+      v=v*v*v; const u=rng();
+      if(u<1-0.0331*x*x*x*x) return d*v;
+      if(Math.log(Math.max(u,1e-12))<0.5*x*x+d*(1-v+Math.log(v))) return d*v;
+    }
+  }
+  const x=sampleGamma(alpha), y=sampleGamma(betaP);
+  return x/(x+y);
+}
+function sampleLomax(rng, scale, shape){ return scale*(Math.pow(1-rng(),-1/shape)-1); }
+async function computeAmount(strategy, expected, name, people) {
+  const E = Math.max(1, expected);
+  const seedStr = `${expected}|${people}|${strategy}|${name.trim()}`;
+  const rng = await makeRng(seedStr);
+  let v = E;
+  switch(strategy) {
+    case 'stable':    v = sampleNormal(rng, E, E*0.08); break;
+    case 'gambler':   { const x=sampleBeta(rng,0.5,0.5); v=x*2*E; break; }
+    case 'risktaker': v = sampleNormal(rng, E, E*0.35); break;
+    case 'fortune':   v = E*2*rng(); break;
+    case 'jackpot':   { const shape=2.2, scale=E*(shape-1)/shape; v=sampleLomax(rng,scale,shape); break; }
+  }
+  v = Math.max(0, Math.min(v, E*4));
+  return Math.round(v);
+}
+function reactionTier(amount, expected) {
+  const r = amount / Math.max(1, expected);
+  if (r <= 0.25) return 'miracle';
+  if (r <= 0.7)  return 'blessed';
+  if (r <= 1.25) return 'neutral';
+  if (r <= 1.8)  return 'pain';
+  return 'doom';
+}
+
+// ===== Simple QR code generator (no library — canvas-based) =====
+// We use a minimal QR-code-as-URL approach via google charts API fallback
+function makeQrCanvas(text, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  // Use QR code via URL encoded SVG from goqr.me (no key required)
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => { ctx.drawImage(img, 0, 0, size, size); };
+  img.onerror = () => {
+    // Fallback: draw placeholder
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#222';
+    ctx.font = '10px monospace';
+    ctx.fillText('QR', size/2-8, size/2+4);
+  };
+  img.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&bgcolor=fff&color=000&margin=4`;
+  return canvas;
+}
+
+// ===== State =====
+let generatedEntries = [];
+
+// ===== DOM =====
+const expectedInput  = document.getElementById('expected');
+const peopleInput    = document.getElementById('people');
+const strategySelect = document.getElementById('strategy');
+const lockSelect     = document.getElementById('lock-strategy');
+const namesTextarea  = document.getElementById('names');
+const baseUrlInput   = document.getElementById('base-url');
+const btnGenerate    = document.getElementById('btn-generate');
+const resultsSection = document.getElementById('results-section');
+const personList     = document.getElementById('person-list');
+const qrGrid         = document.getElementById('qr-grid');
+const resultsTable   = document.getElementById('results-table');
+const toast          = document.getElementById('toast');
+
+// Set default base URL
+const defaultBase = window.location.href.replace('organizer.html', 'index.html');
+baseUrlInput.value = defaultBase;
+
+// Summary update
+function updateSummary() {
+  const exp = parseInt(expectedInput.value) || 5000;
+  const ppl = parseInt(peopleInput.value) || 1;
+  document.getElementById('sum-expected').textContent = '¥' + exp.toLocaleString('en-US');
+  document.getElementById('sum-people').textContent = ppl + '名';
+  document.getElementById('sum-total').textContent = '¥' + (exp * ppl).toLocaleString('en-US');
+  document.getElementById('sum-session').textContent = '#' + (exp*31+ppl).toString(16).padStart(4,'0').toUpperCase();
+}
+expectedInput.addEventListener('input', updateSummary);
+peopleInput.addEventListener('input', updateSummary);
+updateSummary();
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-urls').style.display = 'none';
+    document.getElementById('tab-qr').style.display = 'none';
+    document.getElementById('tab-results').style.display = 'none';
+    document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
+  });
+});
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function buildUrl(name, expected, people, strategy, baseUrl) {
+  const u = new URL(baseUrl);
+  u.searchParams.set('expected', String(expected));
+  u.searchParams.set('people', String(people));
+  u.searchParams.set('strategy', strategy);
+  u.searchParams.set('name', name.trim());
+  return u.toString();
+}
+
+// Generate
+btnGenerate.addEventListener('click', async () => {
+  const expected = parseInt(expectedInput.value) || 5000;
+  const people   = parseInt(peopleInput.value) || 6;
+  const strategy = strategySelect.value;
+  const baseUrl  = baseUrlInput.value || defaultBase;
+  const namesRaw = namesTextarea.value.trim();
+
+  let names;
+  if (namesRaw) {
+    names = namesRaw.split('\n').map(n => n.trim()).filter(Boolean);
+  } else {
+    names = Array.from({length: people}, (_, i) => '参加者' + (i+1));
+  }
+
+  generatedEntries = names.map(name => ({
+    name,
+    url: buildUrl(name, expected, people, strategy, baseUrl),
+    expected, people, strategy,
+    amount: null, tier: null,
+  }));
+
+  renderPersonList();
+  renderQrGrid();
+  renderResultsTable();
+  resultsSection.style.display = 'block';
+  resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+function renderPersonList() {
+  personList.innerHTML = '';
+  generatedEntries.forEach((entry, idx) => {
+    const card = document.createElement('div');
+    card.className = 'person-card' + (entry.amount !== null ? ' revealed' : '');
+    card.innerHTML = `
+      <div class="person-info">
+        <div class="person-name">${entry.name}</div>
+        ${entry.amount !== null
+          ? `<div class="person-reveal ${entry.tier}">${entry.tier === 'doom' ? '⚠ ' : entry.tier === 'miracle' ? '★ ' : ''}¥${entry.amount.toLocaleString('en-US')} (${entry.tier})</div>`
+          : `<div class="person-url">${entry.url.length > 70 ? entry.url.slice(0,70)+'…' : entry.url}</div>`
+        }
+      </div>
+      <div class="person-actions">
+        <button class="btn-person" data-action="copy" data-idx="${idx}">コピー</button>
+        <button class="btn-person" data-action="reveal" data-idx="${idx}">${entry.amount !== null ? '更新' : '結果表示'}</button>
+        <a href="${entry.url}" target="_blank" style="text-decoration:none">
+          <button class="btn-person" type="button">開く ↗</button>
+        </a>
+      </div>
+    `;
+    personList.appendChild(card);
+  });
+
+  // Bind actions
+  personList.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const idx = parseInt(btn.dataset.idx);
+      const entry = generatedEntries[idx];
+      if (btn.dataset.action === 'copy') {
+        try { await navigator.clipboard.writeText(entry.url); } catch(_) {}
+        btn.classList.add('copied');
+        btn.textContent = '✓';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = 'コピー'; }, 1800);
+      } else if (btn.dataset.action === 'reveal') {
+        const amount = await computeAmount(entry.strategy, entry.expected, entry.name, entry.people);
+        const tier   = reactionTier(amount, entry.expected);
+        generatedEntries[idx].amount = amount;
+        generatedEntries[idx].tier   = tier;
+        renderPersonList();
+        renderResultsTable();
+      }
+    });
+  });
+}
+
+function renderQrGrid() {
+  qrGrid.innerHTML = '';
+  generatedEntries.forEach(entry => {
+    const card = document.createElement('div');
+    card.className = 'qr-card';
+    const canvas = makeQrCanvas(entry.url, 120);
+    card.appendChild(canvas);
+    const nameEl = document.createElement('div');
+    nameEl.className = 'qr-name';
+    nameEl.textContent = entry.name;
+    card.appendChild(nameEl);
+    qrGrid.appendChild(card);
+  });
+}
+
+function renderResultsTable() {
+  const revealed = generatedEntries.filter(e => e.amount !== null);
+  if (!revealed.length) {
+    resultsTable.innerHTML = '<div style="color:var(--text-dim);font-family:var(--font-mono);font-size:11px;text-align:center;padding:20px">「結果表示」ボタンで各自の金額を確認できます</div>';
+    return;
+  }
+  const total = revealed.reduce((s, e) => s + e.amount, 0);
+  const avg   = Math.round(total / revealed.length);
+  const sorted = [...revealed].sort((a,b) => b.amount - a.amount);
+
+  resultsTable.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:12px;">
+      <thead>
+        <tr style="color:var(--gold-dim);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;">
+          <th style="text-align:left;padding:8px 12px;border-bottom:1px solid oklch(0.82 0.14 85 / 0.15)">名前</th>
+          <th style="text-align:right;padding:8px 12px;border-bottom:1px solid oklch(0.82 0.14 85 / 0.15)">金額</th>
+          <th style="text-align:right;padding:8px 12px;border-bottom:1px solid oklch(0.82 0.14 85 / 0.15)">差分</th>
+          <th style="text-align:center;padding:8px 12px;border-bottom:1px solid oklch(0.82 0.14 85 / 0.15)">判定</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sorted.map(e => {
+          const delta = e.amount - e.expected;
+          const pct   = ((e.amount / e.expected - 1) * 100).toFixed(0);
+          const tierColors = { miracle:'oklch(0.72 0.2 145)', blessed:'oklch(0.72 0.18 175)', neutral:'var(--gold)', pain:'oklch(0.72 0.18 48)', doom:'oklch(0.65 0.22 25)' };
+          const col = tierColors[e.tier] || 'var(--gold)';
+          return `<tr style="border-bottom:1px solid oklch(0.82 0.14 85 / 0.08)">
+            <td style="padding:10px 12px;color:var(--cream);font-family:var(--font-display);font-size:14px">${e.name}</td>
+            <td style="padding:10px 12px;text-align:right;color:${col};font-size:15px;font-family:var(--font-display)">¥${e.amount.toLocaleString('en-US')}</td>
+            <td style="padding:10px 12px;text-align:right;color:${delta>=0?'oklch(0.65 0.22 25)':'oklch(0.72 0.2 145)'}">${delta>=0?'+':''}${delta.toLocaleString('en-US')} (${delta>=0?'+':''}${pct}%)</td>
+            <td style="padding:10px 12px;text-align:center;color:${col}">${e.tier}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+      <tfoot>
+        <tr style="border-top:1px solid oklch(0.82 0.14 85 / 0.3)">
+          <td style="padding:10px 12px;color:var(--gold-dim);font-size:10px;letter-spacing:0.15em;text-transform:uppercase">${revealed.length}/${generatedEntries.length}名 集計済み</td>
+          <td style="padding:10px 12px;text-align:right;color:var(--gold);font-family:var(--font-display);font-size:15px">¥${total.toLocaleString('en-US')}</td>
+          <td style="padding:10px 12px;text-align:right;color:var(--text-dim);font-size:11px">平均 ¥${avg.toLocaleString('en-US')}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+}
+
+// Copy all URLs
+document.getElementById('btn-copy-all').addEventListener('click', async () => {
+  const text = generatedEntries.map(e => `${e.name}: ${e.url}`).join('\n');
+  try { await navigator.clipboard.writeText(text); } catch(_) {}
+  showToast('全URL をコピーしました');
+});
+
+// Reveal all
+document.getElementById('btn-reveal-all').addEventListener('click', async () => {
+  for (let i = 0; i < generatedEntries.length; i++) {
+    const entry = generatedEntries[i];
+    if (entry.amount === null) {
+      const amount = await computeAmount(entry.strategy, entry.expected, entry.name, entry.people);
+      generatedEntries[i].amount = amount;
+      generatedEntries[i].tier   = reactionTier(amount, entry.expected);
+    }
+  }
+  renderPersonList();
+  renderResultsTable();
+  showToast('全員の結果を表示しました');
+});
+</script>
+</body>
+</html>
